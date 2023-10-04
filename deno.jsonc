@@ -1,0 +1,18 @@
+{
+  "tasks": {
+    "exec": "deno --allow-read=maps --v8-flags=--max-old-space-size=4096 bin/ks.ts"
+  },
+  "fmt": {
+    "exclude": ["**/*.md"],
+    "lineWidth": 100
+  },
+  "lint": {
+    "rules": {
+      "include": ["verbatim-module-syntax"],
+      "exclude": ["no-case-declarations"]
+    }
+  },
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": true
+  }
+}
