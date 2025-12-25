@@ -1,10 +1,11 @@
-import type { Enemy, Player } from "./object.ts";
+import type { Enemy } from "../object.ts";
+import type { Status } from "./status.ts";
 
-export function isNoDmg(player: Player, enemy: Enemy): boolean {
+export function isNoDmg(player: Status, enemy: Enemy): boolean {
   return damage(player, enemy) === 0;
 }
 
-export function damage(player: Player, enemy: Enemy): number | void {
+export function damage(player: Status, enemy: Enemy): number | void {
   const dpt = Math.max(player.atk - enemy.def, 0);
   const edpt = Math.max(enemy.atk - player.def, 0);
 

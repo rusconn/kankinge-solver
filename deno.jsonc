@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "exec": "deno --allow-read=maps --v8-flags=--max-old-space-size=4096 bin/ks.ts"
+    "exec": "deno --allow-read=stages --v8-flags=--max-old-space-size=4096 bin/ks.ts"
   },
   "fmt": {
     "exclude": ["**/*.md"],

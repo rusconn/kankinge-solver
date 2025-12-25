@@ -62,20 +62,6 @@ export type Goal = {
   name: string;
 };
 
-export type Player = {
-  type: "player";
-  name: "player";
-  hp: number;
-  atk: number;
-  def: number;
-  gold: number;
-  silver: number;
-  blue: number;
-  mag: number;
-  level: number;
-  crystal: number;
-};
-
 export type Object =
   | Enemy
   | Hp
@@ -86,11 +72,10 @@ export type Object =
   | Gate
   | Wall
   | Road
-  | Goal
-  | Player;
+  | Goal;
 
-export function isPlayer(o: Object) {
-  return o.type === "player";
+export function isGoal(o: Object) {
+  return o.type === "goal";
 }
 
 export function isWall(o: Object) {

@@ -374,22 +374,22 @@ export const SYMBOLS = {
     type: "goal",
     name: "goal",
   },
-
-  "@": {
-    type: "player",
-    name: "player",
-    hp: 150,
-    atk: 10,
-    def: 0,
-    silver: 0,
-    gold: 0,
-    blue: 0,
-    mag: 0,
-    level: 0,
-    crystal: 3, // 目的に応じて調整する
-  },
 } satisfies Record<string, Object>;
 
-export function isSymbol(s: string): s is keyof typeof SYMBOLS {
+export type Symbol = keyof typeof SYMBOLS;
+
+export function isSymbol(s: string): s is Symbol {
   return Object.keys(SYMBOLS).includes(s);
+}
+
+export function isWall(s: Symbol): boolean {
+  return s === "□" || s === "■";
+}
+
+export function isRoad(s: Symbol): boolean {
+  return s === " ";
+}
+
+export function isGoal(s: Symbol): boolean {
+  return s === "◯";
 }
