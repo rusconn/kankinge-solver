@@ -1,3 +1,4 @@
+import { bfs } from "./algorithms/bfs.ts";
 import { iddfs } from "./algorithms/iddfs.ts";
 import type { Config } from "./config.ts";
 import * as Graph from "./graph.ts";
@@ -6,9 +7,9 @@ import * as SymbolMap from "./symbol-map.ts";
 
 type Graph = Graph.Graph;
 
-export type { Config };
+export * from "./config.ts";
 
-export function run({ mapPath }: Config): string | void {
+export function run({ mapPath, algorithm }: Config): string | void {
   const symbolMap = SymbolMap.read(mapPath);
   const objectMap = ObjectMap.from(symbolMap);
 
@@ -16,7 +17,7 @@ export function run({ mapPath }: Config): string | void {
   const graph = Graph.create(objectMap.map, objectMap.start);
   console.error(`Graph.create: ${Date.now() - begin}ms`);
 
-  const node = algorithms["iddfs"](graph, objectMap.start, objectMap.goal);
+  const node = algorithms[algorithm](graph, objectMap.start, objectMap.goal);
 
   return JSON.stringify(
     node
@@ -32,5 +33,6 @@ export function run({ mapPath }: Config): string | void {
 }
 
 const algorithms = {
+  bfs,
   iddfs,
 };

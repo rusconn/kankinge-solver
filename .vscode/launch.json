@@ -9,7 +9,7 @@
       "name": "0_tutorial.json",
       "type": "node",
       "program": "${workspaceFolder}/bin/ks.ts",
-      "args": ["stages/0_tutorial.json"],
+      "args": ["stages/0_tutorial.json", "bfs"],
       "cwd": "${workspaceFolder}",
       "env": {},
       "runtimeExecutable": "deno",
