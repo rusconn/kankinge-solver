@@ -1,0 +1,27 @@
+{
+  "format_on_save": "on",
+  "languages": {
+    "TypeScript": {
+      "language_servers": ["deno"],
+      "formatter": "language_server",
+    },
+    "JSON": {
+      "language_servers": ["deno"],
+    },
+    "JSONC": {
+      "language_servers": ["deno"],
+    },
+    "Markdown": {
+      "language_servers": ["deno"],
+    },
+  },
+  "lsp": {
+    "deno": {
+      "settings": {
+        "deno": {
+          "enable": true,
+        },
+      },
+    },
+  },
+}
