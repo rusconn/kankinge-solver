@@ -1,18 +1,19 @@
 {
   "tasks": {
-    "exec": "deno --allow-read=stages --v8-flags=--max-old-space-size=4096 bin/ks.ts"
+    "exec": "deno --allow-read=stages --v8-flags=--max-old-space-size=4096 bin/ks.ts",
   },
   "fmt": {
-    "exclude": ["**/*.md"],
-    "lineWidth": 100
+    "exclude": [".zed/settings.json"],
+    "lineWidth": 100,
+    "json.trailingCommas": "jsonc",
   },
   "lint": {
     "rules": {
       "include": ["verbatim-module-syntax"],
-      "exclude": ["no-case-declarations"]
-    }
+      "exclude": ["no-case-declarations"],
+    },
   },
   "compilerOptions": {
-    "noUncheckedIndexedAccess": true
-  }
+    "noUncheckedIndexedAccess": true,
+  },
 }
