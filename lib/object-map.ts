@@ -1,4 +1,4 @@
-import type * as Object from "./object.ts";
+import * as Object from "./object.ts";
 import type { Point } from "./point.ts";
 import * as Symbol from "./symbols.ts";
 import type * as SymbolMap from "./symbol-map.ts";
@@ -35,11 +35,18 @@ export function from({
   const map: ObjectMap = symbolMap.map((line, y) =>
     line.map((symbol, x) => {
       const id = bit as ObjectId;
-      bit <<= 1n;
+      const object = Symbol.SYMBOLS[symbol];
+      const isStart = start.x === x && start.y === y;
+      if (
+        (!Object.isWall(object) && !Object.isRoad(object)) ||
+        isStart
+      ) {
+        bit <<= 1n;
+      }
       return {
         id,
         point: { x, y },
-        ...Symbol.SYMBOLS[symbol],
+        ...object,
       };
     })
   );
