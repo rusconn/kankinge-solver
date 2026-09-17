@@ -21,7 +21,7 @@ export function expand(node: Node, map: ObjectMap, start: ObjectInstance): Node[
     })
     .map((point) => {
       const object = map[point.y]![point.x]!;
-      const next = { object, blockers: node.blockers.clone() };
+      const next = { object, blockers: node.blockers };
 
       if (
         !Point.equals(node.object.point, start.point) && (
@@ -30,7 +30,7 @@ export function expand(node: Node, map: ObjectMap, start: ObjectInstance): Node[
           node.object.type === "gate"
         )
       ) {
-        next.blockers.add(node.object.id);
+        next.blockers = ObjectIds.add(next.blockers, node.object.id);
       }
 
       return next;

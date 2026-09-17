@@ -1,11 +1,10 @@
 import * as State from "./state.ts";
+import type { ObjectIds } from "./object-ids.ts";
 
 type State = State.State;
 
-type Key = string & { __tag: "Key" };
-
 export class Frontiers {
-  #map = new Map<Key, State[]>();
+  #map = new Map<ObjectIds, State[]>();
 
   dominates(state: State): boolean {
     const frontiers = this.#get(state);
@@ -38,14 +37,10 @@ export class Frontiers {
   }
 
   #get(state: State): State[] | undefined {
-    return this.#map.get(this.#key(state));
+    return this.#map.get(state.erased);
   }
 
   #set(state: State): void {
-    this.#map.set(this.#key(state), [state]);
-  }
-
-  #key({ erased }: Pick<State, "erased">): Key {
-    return [...erased].sort().toString() as Key;
+    this.#map.set(state.erased, [state]);
   }
 }

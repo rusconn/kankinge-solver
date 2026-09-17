@@ -1,4 +1,4 @@
-import type { ObjectIds } from "../object-ids.ts";
+import { ObjectIds } from "../object-ids.ts";
 import type { ObjectInstance } from "../object-map.ts";
 import type { Node } from "./node.ts";
 
@@ -42,9 +42,9 @@ export class Frontiers {
   }
 
   #compare(blockers: ObjectIds, frontier: ObjectIds): "=" | ">" | "<" | "<>" {
-    if (blockers.equals(frontier)) return "=";
-    if (blockers.isSubsetOf(frontier)) return ">";
-    if (blockers.isSupersetOf(frontier)) return "<";
+    if (ObjectIds.equals(blockers, frontier)) return "=";
+    if (ObjectIds.isSubsetOf(blockers, frontier)) return ">";
+    if (ObjectIds.isSupersetOf(blockers, frontier)) return "<";
     return "<>";
   }
 }

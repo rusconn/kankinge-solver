@@ -7,15 +7,17 @@ type State = State.State;
 export type Node = {
   depth: number;
   state: State;
+  parent: Node | undefined;
 };
 
 export function root(objectId: ObjectId): Node {
-  return { depth: 0, state: State.initial(objectId) };
+  return { depth: 0, state: State.initial(objectId), parent: undefined };
 }
 
-export function expand({ depth, state }: Node, graph: Graph): Node[] {
-  return State.expand(state, graph).map((state) => ({
-    depth: depth + 1,
+export function expand(node: Node, graph: Graph): Node[] {
+  return State.expand(node.state, graph).map((state) => ({
+    depth: node.depth + 1,
     state,
+    parent: node,
   }));
 }

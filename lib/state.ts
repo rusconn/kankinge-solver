@@ -34,8 +34,8 @@ export function expand(state: State, graph: Graph): State[] {
 export function moveToNoCost(state: State, graph: Graph): State | void {
   const noCostEdge = graph.get(state.objectId)!.values()
     .find((edge) => {
-      if (state.erased.has(edge.to.id)) return;
-      if (!state.erased.isSupersetOf(edge.blockers)) return;
+      if (ObjectIds.has(state.erased, edge.to.id)) return;
+      if (!ObjectIds.isSupersetOf(state.erased, edge.blockers)) return;
       return Object.isUp(edge.to) ||
         (Object.isEnemy(edge.to) && Battle.isNoDmg(state.status, edge.to));
     });
@@ -51,14 +51,13 @@ function moves(state: State, graph: Graph): State[] {
   return (
     graph.get(state.objectId)!.values()
       .filter((edge) =>
-        !state.erased.has(edge.to.id) &&
-        state.erased.isSupersetOf(edge.blockers)
+        !ObjectIds.has(state.erased, edge.to.id) &&
+        ObjectIds.isSupersetOf(state.erased, edge.blockers)
       )
       .map((edge) =>
         tryMove({
           ...state,
           status: state.status.clone(),
-          erased: state.erased.clone(),
         }, edge.to)
       )
       .filter((state) => state != null)
@@ -68,7 +67,7 @@ function moves(state: State, graph: Graph): State[] {
 
 function tryMove(state: State, dest: ObjectInstance): State | void {
   state.objectId = dest.id;
-  state.erased.add(dest.id);
+  state.erased = ObjectIds.add(state.erased, dest.id);
 
   switch (dest.type) {
     case "up":

@@ -1,48 +1,29 @@
 import type { ObjectId } from "./object-map.ts";
 
-export class ObjectIds implements Iterable<ObjectId> {
-  #set: Set<ObjectId>;
+export type ObjectIds = bigint;
 
-  private constructor(set: Set<ObjectId>) {
-    this.#set = set;
-  }
+export const ObjectIds = {
+  empty(): ObjectIds {
+    return 0n;
+  },
 
-  static empty(): ObjectIds {
-    return new ObjectIds(new Set());
-  }
+  add(ids: ObjectIds, id: ObjectId): ObjectIds {
+    return ids | (1n << BigInt(id));
+  },
 
-  clone(): ObjectIds {
-    return new ObjectIds(new Set(this.#set));
-  }
+  has(ids: ObjectIds, id: ObjectId): boolean {
+    return ((ids >> BigInt(id)) & 1n) === 1n;
+  },
 
-  [Symbol.iterator](): Iterator<ObjectId> {
-    return this.values();
-  }
+  equals(a: ObjectIds, b: ObjectIds): boolean {
+    return a === b;
+  },
 
-  values(): IteratorObject<ObjectId> {
-    return this.#set.values();
-  }
+  isSupersetOf(ids: ObjectIds, other: ObjectIds): boolean {
+    return (ids & other) === other;
+  },
 
-  add(id: ObjectId): void {
-    this.#set.add(id);
-  }
-
-  has(id: ObjectId): boolean {
-    return this.#set.has(id);
-  }
-
-  equals(other: ObjectIds): boolean {
-    return (
-      this.#set.size === other.#set.size &&
-      this.#set.difference(other.#set).size === 0
-    );
-  }
-
-  isSupersetOf(other: ObjectIds): boolean {
-    return this.#set.isSupersetOf(other.#set);
-  }
-
-  isSubsetOf(other: ObjectIds): boolean {
-    return this.#set.isSubsetOf(other.#set);
-  }
-}
+  isSubsetOf(ids: ObjectIds, other: ObjectIds): boolean {
+    return (ids & other) === ids;
+  },
+};
