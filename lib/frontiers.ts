@@ -9,8 +9,7 @@ export class Frontiers {
 
   dominates(state: State): boolean {
     const frontiers = this.#get(state);
-    return frontiers != null &&
-      frontiers.every((frontier) => State.compareStatus(state, frontier) !== "=");
+    return frontiers != null && !frontiers.includes(state);
   }
 
   add(state: State): boolean {

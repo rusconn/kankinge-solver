@@ -7,8 +7,7 @@ export class Frontiers {
 
   dominates(node: Node): boolean {
     const frontiers = this.#map.get(node.object);
-    return frontiers != null &&
-      frontiers.every((frontier) => this.#compare(node.blockers, frontier) !== "=");
+    return frontiers != null && !frontiers.includes(node.blockers);
   }
 
   add(node: Node): boolean {
