@@ -42,7 +42,7 @@ export function moveToNoCost(state: State, graph: Graph): State | void {
   if (noCostEdge) {
     return tryMove({
       ...state,
-      status: state.status.clone(), // なんでcloneが必要？
+      status: state.status.clone(), // 必要
     }, noCostEdge.to)!;
   }
 }
