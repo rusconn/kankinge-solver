@@ -74,22 +74,24 @@ export type Object =
   | Road
   | Goal;
 
-export function isGoal(o: Object) {
-  return o.type === "goal";
-}
+export const Object = {
+  isGoal(o: Object) {
+    return o.type === "goal";
+  },
 
-export function isWall(o: Object) {
-  return o.type === "wall";
-}
+  isWall(o: Object) {
+    return o.type === "wall";
+  },
 
-export function isRoad(o: Object) {
-  return o.type === "road";
-}
+  isRoad(o: Object) {
+    return o.type === "road";
+  },
 
-export function isUp(o: Object) {
-  return o.type === "up";
-}
+  isUp(o: Object) {
+    return o.type === "up";
+  },
 
-export function isEnemy(o: Object) {
-  return o.type === "enemy";
-}
+  isEnemy(o: Object) {
+    return o.type === "enemy";
+  },
+};

@@ -1,5 +1,5 @@
 import { run } from "../lib/mod.ts";
-import * as Config from "./internal/config.ts";
+import { Config } from "./internal/config.ts";
 
 if (import.meta.main) {
   const config = Config.create(Deno.args);

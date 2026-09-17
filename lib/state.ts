@@ -1,8 +1,8 @@
 import type { Graph } from "./graph.ts";
-import * as Object from "./object.ts";
+import { Object } from "./object.ts";
 import { ObjectIds } from "./object-ids.ts";
 import type { ObjectId, ObjectInstance } from "./object-map.ts";
-import * as Battle from "./state/battle.ts";
+import { Battle } from "./state/battle.ts";
 import { Status } from "./state/status.ts";
 
 export type State = {
@@ -11,27 +11,36 @@ export type State = {
   erased: ObjectIds;
 };
 
-export function initial(objectId: ObjectId): State {
-  return {
-    objectId,
-    status: Status.initial(),
-    erased: ObjectIds.empty(),
-  };
-}
+export const State = {
+  initial(objectId: ObjectId): State {
+    return {
+      objectId,
+      status: Status.initial(),
+      erased: ObjectIds.empty(),
+    };
+  },
 
-export function expand(state: State, graph: Graph): State[] {
-  const noCost = moveToNoCost(state, graph);
-  if (noCost) {
-    return [noCost];
-  }
+  expand(state: State, graph: Graph): State[] {
+    const noCost = moveToNoCost(state, graph);
+    if (noCost) {
+      return [noCost];
+    }
 
-  return [
-    ...moves(state, graph),
-    ...conversions(state),
-  ];
-}
+    return [
+      ...moves(state, graph),
+      ...conversions(state),
+    ];
+  },
 
-export function moveToNoCost(state: State, graph: Graph): State | void {
+  compareStatus(s: State, t: State): "=" | ">" | "<" | "<>" {
+    if (equals(s, t)) return "=";
+    if (superior(s, t)) return ">";
+    if (superior(t, s)) return "<";
+    return "<>";
+  },
+};
+
+function moveToNoCost(state: State, graph: Graph): State | void {
   const noCostEdge = graph.get(state.objectId)!.values()
     .find((edge) => {
       if (ObjectIds.has(state.erased, edge.to.id)) return;
@@ -131,13 +140,6 @@ function conversions({ status, ...rest }: State): State[] {
   }
 
   return states;
-}
-
-export function compareStatus(s: State, t: State): "=" | ">" | "<" | "<>" {
-  if (equals(s, t)) return "=";
-  if (superior(s, t)) return ">";
-  if (superior(t, s)) return "<";
-  return "<>";
 }
 
 function equals(s: State, t: State): boolean {

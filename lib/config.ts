@@ -5,6 +5,8 @@ export type Config = {
 
 type Algorithm = "bfs" | "iddfs";
 
-export function isAlgorithm(x: unknown): x is Algorithm {
-  return x === "bfs" || x === "iddfs";
-}
+export const Config = {
+  isAlgorithm(x: unknown): x is Algorithm {
+    return x === "bfs" || x === "iddfs";
+  },
+};

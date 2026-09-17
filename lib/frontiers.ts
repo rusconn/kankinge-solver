@@ -1,6 +1,4 @@
-import * as State from "./state.ts";
-
-type State = State.State;
+import { State } from "./state.ts";
 
 type Key = string & { __tag: "Key" };
 

@@ -1,6 +1,6 @@
 import type { Object } from "./object.ts";
 
-export const SYMBOLS = {
+const SYMBOLS = {
   a: {
     type: "enemy",
     name: "ゴブリン",
@@ -378,18 +378,22 @@ export const SYMBOLS = {
 
 export type Symbol = keyof typeof SYMBOLS;
 
-export function isSymbol(s: string): s is Symbol {
-  return Object.keys(SYMBOLS).includes(s);
-}
+export const Symbol = {
+  SYMBOLS,
 
-export function isWall(s: Symbol): boolean {
-  return s === "□" || s === "■";
-}
+  isSymbol(s: string): s is Symbol {
+    return global.Object.keys(SYMBOLS).includes(s);
+  },
 
-export function isRoad(s: Symbol): boolean {
-  return s === " ";
-}
+  isWall(s: Symbol): boolean {
+    return s === "□" || s === "■";
+  },
 
-export function isGoal(s: Symbol): boolean {
-  return s === "◯";
-}
+  isRoad(s: Symbol): boolean {
+    return s === " ";
+  },
+
+  isGoal(s: Symbol): boolean {
+    return s === "◯";
+  },
+};

@@ -1,13 +1,11 @@
 import { bfs } from "./algorithms/bfs.ts";
 import { iddfs } from "./algorithms/iddfs.ts";
 import type { Config } from "./config.ts";
-import * as Graph from "./graph.ts";
+import { Graph } from "./graph.ts";
 import type { Node } from "./node.ts";
 import type { ObjectId } from "./object-map.ts";
-import * as ObjectMap from "./object-map.ts";
-import * as SymbolMap from "./symbol-map.ts";
-
-type Graph = Graph.Graph;
+import { ObjectMap } from "./object-map.ts";
+import { SymbolMap } from "./symbol-map.ts";
 
 export * from "./config.ts";
 
