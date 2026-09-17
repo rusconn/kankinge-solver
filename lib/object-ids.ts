@@ -8,11 +8,11 @@ export const ObjectIds = {
   },
 
   add(ids: ObjectIds, id: ObjectId): ObjectIds {
-    return ids | (1n << BigInt(id));
+    return ids | id;
   },
 
   has(ids: ObjectIds, id: ObjectId): boolean {
-    return ((ids >> BigInt(id)) & 1n) === 1n;
+    return (ids & id) !== 0n;
   },
 
   equals(a: ObjectIds, b: ObjectIds): boolean {

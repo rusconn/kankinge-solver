@@ -12,7 +12,7 @@ export type ObjectInstance = Object & {
   point: Point;
 };
 
-export type ObjectId = number & { __tag: "ObjectId" };
+export type ObjectId = bigint & { __tag: "ObjectId" };
 export type ObjectMap = ReadonlyArray<ReadonlyArray<ObjectInstance>>;
 export type ObjectDict = ReadonlyMap<ObjectId, ObjectInstance>;
 
@@ -30,14 +30,18 @@ export function from({
   goal: ObjectInstance;
   dict: ObjectDict;
 } {
-  let id = 0 as ObjectId;
+  let bit = 1n;
 
   const map: ObjectMap = symbolMap.map((line, y) =>
-    line.map((symbol, x) => ({
-      id: id++ as ObjectId,
-      point: { x, y },
-      ...Symbol.SYMBOLS[symbol],
-    }))
+    line.map((symbol, x) => {
+      const id = bit as ObjectId;
+      bit <<= 1n;
+      return {
+        id,
+        point: { x, y },
+        ...Symbol.SYMBOLS[symbol],
+      };
+    })
   );
 
   const dict: ObjectDict = new Map(map.flatMap(
