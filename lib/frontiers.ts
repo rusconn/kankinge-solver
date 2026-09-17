@@ -1,10 +1,11 @@
 import * as State from "./state.ts";
-import type { ObjectIds } from "./object-ids.ts";
 
 type State = State.State;
 
+type Key = string & { __tag: "Key" };
+
 export class Frontiers {
-  #map = new Map<ObjectIds, State[]>();
+  #map = new Map<Key, State[]>();
 
   dominates(state: State): boolean {
     const frontiers = this.#get(state);
@@ -37,10 +38,17 @@ export class Frontiers {
   }
 
   #get(state: State): State[] | undefined {
-    return this.#map.get(state.erased);
+    return this.#map.get(this.#key(state));
   }
 
   #set(state: State): void {
-    this.#map.set(state.erased, [state]);
+    this.#map.set(this.#key(state), [state]);
+  }
+
+  #key({ erased }: Pick<State, "erased">): Key {
+    // bigintキーだと非常に遅かった
+    // V8のBigIntハッシュ関数はほぼ下位ビットしか利用しない。下位ビットがほぼ同じ入力では深刻な衝突を引き起こす。
+    // ハッシュ関数が改善されたら不要になる想定
+    return erased.toString(36) as Key;
   }
 }
