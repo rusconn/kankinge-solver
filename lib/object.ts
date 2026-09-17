@@ -6,63 +6,63 @@ export type Enemy = {
   def: number;
 };
 
-export type Hp = {
+type Hp = {
   type: "up";
   kind: "hp";
   name: string;
   amount: number;
 };
 
-export type Atk = {
+type Atk = {
   type: "up";
   kind: "atk";
   name: string;
   amount: number;
 };
 
-export type Def = {
+type Def = {
   type: "up";
   kind: "def";
   name: string;
   amount: number;
 };
 
-export type Key = {
+type Key = {
   type: "up";
   kind: "gold" | "silver" | "blue";
   name: string;
   amount: number;
 };
 
-export type Crystal = {
+type Crystal = {
   type: "up";
   kind: "crystal";
   name: string;
   amount: number;
 };
 
-export type Gate = {
+type Gate = {
   type: "gate";
   kind: "gold" | "silver" | "blue";
   name: string;
 };
 
-export type Wall = {
+type Wall = {
   type: "wall";
   name: string;
 };
 
-export type Road = {
+type Road = {
   type: "road";
   name: string;
 };
 
-export type Start = {
+type Start = {
   type: "start";
   name: string;
 };
 
-export type Goal = {
+type Goal = {
   type: "goal";
   name: string;
 };

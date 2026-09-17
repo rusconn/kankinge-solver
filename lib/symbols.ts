@@ -384,16 +384,4 @@ export type Symbol = keyof typeof SYMBOLS;
 
 export const Symbol = {
   SYMBOLS,
-
-  isSymbol(s: string): s is Symbol {
-    return global.Object.keys(SYMBOLS).includes(s);
-  },
-
-  isWall(s: Symbol): boolean {
-    return s === "□" || s === "■";
-  },
-
-  isRoad(s: Symbol): boolean {
-    return s === " ";
-  },
 };
