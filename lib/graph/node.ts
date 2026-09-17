@@ -13,19 +13,19 @@ export const Node = {
     return { object: start, blockers: ObjectIds.empty() };
   },
 
-  expand(node: Node, map: ObjectMap, start: ObjectInstance): Node[] {
+  expand(node: Node, map: ObjectMap): Node[] {
     return Point.neighbors(node.object.point)
-      .filter((point) => !Point.equals(point, start.point))
-      .filter((point) => {
-        const object = map[point.y]?.[point.x];
-        return object && !Object.isWall(object);
-      })
-      .map((point) => {
-        const object = map[point.y]![point.x]!;
-        const next = { object, blockers: node.blockers };
+      .map((point) => map[point.y]?.[point.x])
+      .filter((object) =>
+        object &&
+        !Object.isWall(object) &&
+        !Object.isStart(object)
+      )
+      .map((object) => {
+        const next = { object: object!, blockers: node.blockers };
 
         if (
-          !Point.equals(node.object.point, start.point) && (
+          !Object.isStart(node.object) && (
             node.object.type === "up" ||
             node.object.type === "enemy" ||
             node.object.type === "gate"

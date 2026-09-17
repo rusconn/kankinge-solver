@@ -57,6 +57,11 @@ export type Road = {
   name: string;
 };
 
+export type Start = {
+  type: "start";
+  name: string;
+};
+
 export type Goal = {
   type: "goal";
   name: string;
@@ -72,9 +77,14 @@ export type Object =
   | Gate
   | Wall
   | Road
+  | Start
   | Goal;
 
 export const Object = {
+  isStart(o: Object) {
+    return o.type === "start";
+  },
+
   isGoal(o: Object) {
     return o.type === "goal";
   },

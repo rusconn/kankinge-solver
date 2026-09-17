@@ -370,6 +370,10 @@ const SYMBOLS = {
     name: "road",
   },
 
+  "@": {
+    type: "start",
+    name: "start",
+  },
   "◯": {
     type: "goal",
     name: "goal",
@@ -391,9 +395,5 @@ export const Symbol = {
 
   isRoad(s: Symbol): boolean {
     return s === " ";
-  },
-
-  isGoal(s: Symbol): boolean {
-    return s === "◯";
   },
 };

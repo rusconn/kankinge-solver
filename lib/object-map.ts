@@ -13,14 +13,8 @@ export type ObjectDict = ReadonlyMap<ObjectId, ObjectInstance>;
 export type ObjectMap = ReadonlyArray<ReadonlyArray<ObjectInstance>>;
 
 export const ObjectMap = {
-  from({
-    map: symbolMap,
-    start,
-    goal,
-  }: {
-    map: SymbolMap;
-    start: Point;
-    goal: Point;
+  from(input: {
+    symbolMap: SymbolMap;
   }): {
     map: ObjectMap;
     start: ObjectInstance;
@@ -28,23 +22,28 @@ export const ObjectMap = {
     dict: ObjectDict;
   } {
     let bit = 1n;
+    let start: ObjectInstance | undefined;
+    let goal: ObjectInstance | undefined;
 
-    const map: ObjectMap = symbolMap.map((line, y) =>
+    const map: ObjectMap = input.symbolMap.map((line, y) =>
       line.map((symbol, x) => {
-        const id = bit as ObjectId;
-        const object = Symbol.SYMBOLS[symbol];
-        const isStart = start.x === x && start.y === y;
-        if (
-          (!Object.isWall(object) && !Object.isRoad(object)) ||
-          isStart
-        ) {
+        const instance: ObjectInstance = {
+          id: bit as ObjectId,
+          point: { x, y },
+          ...Symbol.SYMBOLS[symbol],
+        };
+        if (Object.isStart(instance)) {
+          start = instance;
+        }
+        if (Object.isGoal(instance)) {
+          goal = instance;
+        }
+
+        if (!Object.isWall(instance) && !Object.isRoad(instance)) {
           bit <<= 1n;
         }
-        return {
-          id,
-          point: { x, y },
-          ...object,
-        };
+
+        return instance;
       })
     );
 
@@ -54,8 +53,8 @@ export const ObjectMap = {
 
     return {
       map,
-      start: map[start.y]![start.x]!,
-      goal: map[goal.y]![goal.x]!,
+      start: start!,
+      goal: goal!,
       dict,
     };
   },

@@ -24,7 +24,7 @@ export const Edges = {
         continue;
       }
 
-      for (const next of Node.expand(node, map, start)) {
+      for (const next of Node.expand(node, map)) {
         if (frontiers.add(next)) {
           nodes.enqueue(next);
         }

@@ -15,6 +15,7 @@ export const Graph = {
         if (
           !Object.isWall(object) &&
           !Object.isRoad(object) &&
+          !Object.isStart(object) &&
           !Object.isGoal(object)
         ) {
           graph.set(object.id, Edges.create(map, object));
