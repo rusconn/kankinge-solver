@@ -75,18 +75,19 @@ function moves(state: State, graph: Graph): State[] {
 }
 
 function tryMove(state: State, dest: ObjectInstance): State | void {
-  state.objectId = dest.id;
-  state.erased = ObjectIds.add(state.erased, dest.id);
-
   switch (dest.type) {
     case "up":
       state.status[dest.kind] += dest.amount;
+      state.objectId = dest.id;
+      state.erased = ObjectIds.add(state.erased, dest.id);
       return state;
     case "gate":
       if (dest.kind === "gold" && state.status.gold === 0) return;
       if (dest.kind === "silver" && state.status.silver === 0) return;
       if (dest.kind === "blue" && state.status.blue === 0) return;
       state.status[dest.kind] -= 1;
+      state.objectId = dest.id;
+      state.erased = ObjectIds.add(state.erased, dest.id);
       return state;
     case "enemy":
       const dmg = Battle.damage(state.status, dest);
@@ -94,8 +95,12 @@ function tryMove(state: State, dest: ObjectInstance): State | void {
       if (dmg >= state.status.hp) return;
       state.status.hp -= dmg;
       state.status.mag += 1;
+      state.objectId = dest.id;
+      state.erased = ObjectIds.add(state.erased, dest.id);
       return state;
     case "goal":
+      state.objectId = dest.id;
+      state.erased = ObjectIds.add(state.erased, dest.id);
       return state;
     default:
       throw new Error(`Unexpected object type: ${dest.type}`);
