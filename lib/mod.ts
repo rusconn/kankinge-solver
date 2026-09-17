@@ -8,10 +8,7 @@ import type { ObjectId } from "./graph/object-map.ts";
 export * from "./config.ts";
 
 export function run({ mapPath, algorithm }: Config): string | void {
-  const begin = Date.now();
   const { graph, start, goal, dict } = Graph.create(mapPath);
-  console.error(`Graph.create: ${Date.now() - begin}ms`);
-
   const node = algorithms[algorithm](graph, start, goal);
 
   return JSON.stringify(

@@ -21,13 +21,20 @@ export const State = {
   },
 
   expand(state: State, graph: Graph): State[] {
-    const noCost = moveToNoCost(state, graph);
+    const dests = reachables(state, graph);
+
+    const noCost = dests.find((dest) =>
+      Object.isUp(dest) || (Object.isEnemy(dest) && Battle.isNoDmg(state.status, dest))
+    );
     if (noCost) {
-      return [noCost];
+      const moved = tryMove({ ...state, status: state.status.clone() }, noCost);
+      return [moved!];
     }
 
     return [
-      ...moves(state, graph),
+      ...dests
+        .map((dest) => tryMove({ ...state, status: state.status.clone() }, dest))
+        .filter((state) => state != null),
       ...conversions(state),
     ];
   },
@@ -40,38 +47,32 @@ export const State = {
   },
 };
 
-function moveToNoCost(state: State, graph: Graph): State | void {
-  const noCostEdge = graph.get(state.objectId)!.values()
-    .find((edge) => {
-      if (ObjectIds.has(state.erased, edge.to.id)) return;
-      if (!ObjectIds.isSupersetOf(state.erased, edge.blockers)) return;
-      return Object.isUp(edge.to) ||
-        (Object.isEnemy(edge.to) && Battle.isNoDmg(state.status, edge.to));
-    });
-  if (noCostEdge) {
-    return tryMove({
-      ...state,
-      status: state.status.clone(), // 必要
-    }, noCostEdge.to)!;
-  }
-}
+function reachables(state: State, graph: Graph): ObjectInstance[] {
+  const visited = new Set<ObjectId>();
+  const reached: ObjectInstance[] = [];
+  const stack: ObjectId[] = [state.objectId];
 
-function moves(state: State, graph: Graph): State[] {
-  return (
-    graph.get(state.objectId)!.values()
-      .filter((edge) =>
-        !ObjectIds.has(state.erased, edge.to.id) &&
-        ObjectIds.isSupersetOf(state.erased, edge.blockers)
-      )
-      .map((edge) =>
-        tryMove({
-          ...state,
-          status: state.status.clone(),
-        }, edge.to)
-      )
-      .filter((state) => state != null)
-      .toArray()
-  );
+  while (stack.length > 0) {
+    const id = stack.pop()!;
+    if (visited.has(id)) {
+      continue;
+    }
+
+    visited.add(id);
+
+    for (const to of graph.get(id)!) {
+      if (visited.has(to.id)) {
+        continue;
+      }
+      if (ObjectIds.has(state.erased, to.id)) {
+        stack.push(to.id);
+      } else {
+        reached.push(to);
+      }
+    }
+  }
+
+  return reached;
 }
 
 function tryMove(state: State, dest: ObjectInstance): State | void {

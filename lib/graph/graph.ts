@@ -1,10 +1,10 @@
 import { Object } from "../object.ts";
-import { Edges } from "./edges.ts";
-import type { ObjectDict, ObjectId, ObjectInstance } from "./object-map.ts";
+import { Point } from "../point.ts";
+import type { ObjectDict, ObjectId, ObjectInstance, ObjectMap } from "./object-map.ts";
 import { ObjectMap as ObjectMapFactory } from "./object-map.ts";
 import { SymbolMap } from "./symbol-map.ts";
 
-export type Graph = ReadonlyMap<ObjectId, Edges>;
+export type Graph = ReadonlyMap<ObjectId, ReadonlySet<ObjectInstance>>;
 
 export const Graph = {
   create(mapPath: string): {
@@ -16,19 +16,12 @@ export const Graph = {
     const { symbolMap } = SymbolMap.read(mapPath);
     const objectMap = ObjectMapFactory.from({ symbolMap });
 
-    const graph = new Map<ObjectId, Edges>();
-
-    graph.set(objectMap.start.id, Edges.create(objectMap.map, objectMap.start));
+    const graph = new Map<ObjectId, ReadonlySet<ObjectInstance>>();
 
     for (const row of objectMap.map) {
       for (const object of row) {
-        if (
-          !Object.isWall(object) &&
-          !Object.isRoad(object) &&
-          !Object.isStart(object) &&
-          !Object.isGoal(object)
-        ) {
-          graph.set(object.id, Edges.create(objectMap.map, object));
+        if (isOrigin(object)) {
+          graph.set(object.id, reachables(objectMap.map, object));
         }
       }
     }
@@ -41,3 +34,46 @@ export const Graph = {
     };
   },
 };
+
+function isOrigin(object: ObjectInstance): boolean {
+  return (
+    !Object.isWall(object) &&
+    !Object.isRoad(object) &&
+    !Object.isGoal(object)
+  );
+}
+
+function reachables(map: ObjectMap, start: ObjectInstance): ReadonlySet<ObjectInstance> {
+  const reached = new Set<ObjectInstance>();
+  const visited = new Set<ObjectInstance>();
+  const stack = [start];
+
+  while (stack.length > 0) {
+    const node = stack.pop()!;
+
+    if (visited.has(node)) {
+      continue;
+    }
+
+    visited.add(node);
+
+    for (const next of neighbors(map, node.point)) {
+      if (visited.has(next)) {
+        continue;
+      }
+      if (Object.isRoad(next) || Object.isStart(next)) {
+        stack.push(next);
+      } else if (!Object.isWall(next)) {
+        reached.add(next);
+      }
+    }
+  }
+
+  return reached;
+}
+
+function neighbors(map: ObjectMap, point: { x: number; y: number }): ObjectInstance[] {
+  return Point.neighbors(point)
+    .map((point) => map[point.y]?.[point.x])
+    .filter((object): object is ObjectInstance => object != null);
+}
