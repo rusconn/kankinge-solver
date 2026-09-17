@@ -27,13 +27,13 @@ export const State = {
       Object.isUp(dest) || (Object.isEnemy(dest) && Battle.isNoDmg(state.status, dest))
     );
     if (noCost) {
-      const moved = tryMove({ ...state, status: state.status.clone() }, noCost);
+      const moved = tryMove(state, noCost);
       return [moved!];
     }
 
     return [
       ...dests
-        .map((dest) => tryMove({ ...state, status: state.status.clone() }, dest))
+        .map((dest) => tryMove(state, dest))
         .filter((state) => state != null),
       ...conversions(state),
     ];
@@ -75,34 +75,44 @@ function reachables(state: State, graph: Graph): ObjectInstance[] {
   return reached;
 }
 
-function tryMove(state: State, dest: ObjectInstance): State | void {
+function tryMove({ status, ...rest }: State, dest: ObjectInstance): State | void {
+  const cloneState = (): State => ({ ...rest, status: status.clone() });
+
   switch (dest.type) {
-    case "up":
+    case "up": {
+      const state = cloneState();
       state.status[dest.kind] += dest.amount;
       state.objectId = dest.id;
       state.erased = ObjectIds.add(state.erased, dest.id);
       return state;
-    case "gate":
-      if (dest.kind === "gold" && state.status.gold === 0) return;
-      if (dest.kind === "silver" && state.status.silver === 0) return;
-      if (dest.kind === "blue" && state.status.blue === 0) return;
+    }
+    case "gate": {
+      if (dest.kind === "gold" && status.gold === 0) return;
+      if (dest.kind === "silver" && status.silver === 0) return;
+      if (dest.kind === "blue" && status.blue === 0) return;
+      const state = cloneState();
       state.status[dest.kind] -= 1;
       state.objectId = dest.id;
       state.erased = ObjectIds.add(state.erased, dest.id);
       return state;
-    case "enemy":
-      const dmg = Battle.damage(state.status, dest);
+    }
+    case "enemy": {
+      const dmg = Battle.damage(status, dest);
       if (dmg == null) return;
-      if (dmg >= state.status.hp) return;
+      if (dmg >= status.hp) return;
+      const state = cloneState();
       state.status.hp -= dmg;
       state.status.mag += 1;
       state.objectId = dest.id;
       state.erased = ObjectIds.add(state.erased, dest.id);
       return state;
-    case "goal":
+    }
+    case "goal": {
+      const state = cloneState();
       state.objectId = dest.id;
       state.erased = ObjectIds.add(state.erased, dest.id);
       return state;
+    }
     default:
       throw new Error(`Unexpected object type: ${dest.type}`);
   }
