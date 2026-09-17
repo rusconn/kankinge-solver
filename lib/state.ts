@@ -136,8 +136,8 @@ function conversions({ status, ...rest }: State): State[] {
 
 export function compareStatus(s: State, t: State): "=" | ">" | "<" | "<>" {
   if (equals(s, t)) return "=";
-  if (dominates(s, t)) return ">";
-  if (dominates(t, s)) return "<";
+  if (superior(s, t)) return ">";
+  if (superior(t, s)) return "<";
   return "<>";
 }
 
@@ -145,7 +145,7 @@ function equals(s: State, t: State): boolean {
   return s.status.equals(t.status);
 }
 
-function dominates(s: State, t: State): boolean {
+function superior(s: State, t: State): boolean {
   return (
     s.status.notInferiorAllTo(t.status) &&
     s.status.superiorAnyTo(t.status)
