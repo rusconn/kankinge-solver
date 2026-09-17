@@ -1,4 +1,4 @@
-import type { Object } from "./object.ts";
+import type { Object } from "../object.ts";
 
 const SYMBOLS = {
   a: {

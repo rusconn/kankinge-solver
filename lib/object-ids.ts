@@ -1,4 +1,4 @@
-import type { ObjectId } from "./object-map.ts";
+import type { ObjectId } from "./graph/object-map.ts";
 
 export type ObjectIds = bigint;
 

@@ -1,8 +1,8 @@
 import { Queue } from "../data/queue.ts";
-import { Frontiers } from "../frontiers.ts";
-import type { Graph } from "../graph.ts";
-import { Node } from "../node.ts";
-import type { ObjectInstance } from "../object-map.ts";
+import type { Graph } from "../graph/graph.ts";
+import type { ObjectInstance } from "../graph/object-map.ts";
+import { Frontiers } from "./bfs/frontiers.ts";
+import { Node } from "./shared/node.ts";
 
 export function bfs(graph: Graph, start: ObjectInstance, goal: ObjectInstance): Node | void {
   const frontiers = new Frontiers();

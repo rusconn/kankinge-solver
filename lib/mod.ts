@@ -1,30 +1,25 @@
 import { bfs } from "./algorithms/bfs.ts";
 import { iddfs } from "./algorithms/iddfs.ts";
+import type { Node } from "./algorithms/shared/node.ts";
 import type { Config } from "./config.ts";
-import { Graph } from "./graph.ts";
-import type { Node } from "./node.ts";
-import type { ObjectId } from "./object-map.ts";
-import { ObjectMap } from "./object-map.ts";
-import { SymbolMap } from "./symbol-map.ts";
+import { Graph } from "./graph/graph.ts";
+import type { ObjectId } from "./graph/object-map.ts";
 
 export * from "./config.ts";
 
 export function run({ mapPath, algorithm }: Config): string | void {
-  const symbolMap = SymbolMap.read(mapPath);
-  const objectMap = ObjectMap.from(symbolMap);
-
   const begin = Date.now();
-  const graph = Graph.create(objectMap.map, objectMap.start);
+  const { graph, start, goal, dict } = Graph.create(mapPath);
   console.error(`Graph.create: ${Date.now() - begin}ms`);
 
-  const node = algorithms[algorithm](graph, objectMap.start, objectMap.goal);
+  const node = algorithms[algorithm](graph, start, goal);
 
   return JSON.stringify(
     node
       ? {
         status: node.state.status.toObject(),
         path: pathOf(node).map((objectId) => {
-          const object = objectMap.dict.get(objectId)!;
+          const object = dict.get(objectId)!;
           return { point: object.point, name: object.name };
         }),
       }

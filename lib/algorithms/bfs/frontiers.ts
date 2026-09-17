@@ -1,4 +1,4 @@
-import { State } from "./state.ts";
+import { State } from "../../state.ts";
 
 type Key = string & { __tag: "Key" };
 

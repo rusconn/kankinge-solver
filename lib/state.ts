@@ -1,7 +1,7 @@
-import type { Graph } from "./graph.ts";
 import { Object } from "./object.ts";
 import { ObjectIds } from "./object-ids.ts";
-import type { ObjectId, ObjectInstance } from "./object-map.ts";
+import type { Graph } from "./graph/graph.ts";
+import type { ObjectId, ObjectInstance } from "./graph/object-map.ts";
 import { Battle } from "./state/battle.ts";
 import { Status } from "./state/status.ts";
 

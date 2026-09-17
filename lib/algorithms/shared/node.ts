@@ -1,6 +1,6 @@
-import type { Graph } from "./graph.ts";
-import type { ObjectId } from "./object-map.ts";
-import { State } from "./state.ts";
+import type { Graph } from "../../graph/graph.ts";
+import type { ObjectId } from "../../graph/object-map.ts";
+import { State } from "../../state.ts";
 
 export type Node = {
   depth: number;

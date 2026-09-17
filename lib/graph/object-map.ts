@@ -1,5 +1,5 @@
-import { Object } from "./object.ts";
-import type { Point } from "./point.ts";
+import { Object } from "../object.ts";
+import type { Point } from "../point.ts";
 import { Symbol } from "./symbols.ts";
 import type { SymbolMap } from "./symbol-map.ts";
 

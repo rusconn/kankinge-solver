@@ -1,9 +1,9 @@
 import { Queue } from "../data/queue.ts";
-import { Frontiers } from "../graph/frontiers.ts";
-import { Node } from "../graph/node.ts";
 import { Object } from "../object.ts";
 import type { ObjectIds } from "../object-ids.ts";
-import type { ObjectInstance, ObjectMap } from "../object-map.ts";
+import { Frontiers } from "./frontiers.ts";
+import { Node } from "./node.ts";
+import type { ObjectInstance, ObjectMap } from "./object-map.ts";
 
 export type Edges = ReadonlySet<{
   to: ObjectInstance;

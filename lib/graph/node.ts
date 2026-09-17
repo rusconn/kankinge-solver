@@ -1,7 +1,7 @@
 import { Object } from "../object.ts";
 import { ObjectIds } from "../object-ids.ts";
-import type { ObjectInstance, ObjectMap } from "../object-map.ts";
 import { Point } from "../point.ts";
+import type { ObjectInstance, ObjectMap } from "./object-map.ts";
 
 export type Node = {
   object: ObjectInstance;

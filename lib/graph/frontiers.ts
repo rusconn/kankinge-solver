@@ -1,6 +1,6 @@
 import { ObjectIds } from "../object-ids.ts";
-import type { ObjectInstance } from "../object-map.ts";
 import type { Node } from "./node.ts";
+import type { ObjectInstance } from "./object-map.ts";
 
 export class Frontiers {
   #map = new Map<ObjectInstance, ObjectIds[]>();
