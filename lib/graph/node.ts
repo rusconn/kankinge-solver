@@ -13,28 +13,26 @@ export function root(start: ObjectInstance): Node {
 }
 
 export function expand(node: Node, map: ObjectMap, start: ObjectInstance): Node[] {
-  return (
-    Point.neighbors(node.object.point)
-      .filter((point) => !Point.equals(point, start.point))
-      .filter((point) => {
-        const object = map[point.y]?.[point.x];
-        return object && !Object.isWall(object);
-      })
-      .map((point) => {
-        const object = map[point.y]![point.x]!;
-        const next = { object, blockers: node.blockers.clone() };
+  return Point.neighbors(node.object.point)
+    .filter((point) => !Point.equals(point, start.point))
+    .filter((point) => {
+      const object = map[point.y]?.[point.x];
+      return object && !Object.isWall(object);
+    })
+    .map((point) => {
+      const object = map[point.y]![point.x]!;
+      const next = { object, blockers: node.blockers.clone() };
 
-        if (
-          !Point.equals(node.object.point, start.point) && (
-            node.object.type === "up" ||
-            node.object.type === "enemy" ||
-            node.object.type === "gate"
-          )
-        ) {
-          next.blockers.add(node.object.id);
-        }
+      if (
+        !Point.equals(node.object.point, start.point) && (
+          node.object.type === "up" ||
+          node.object.type === "enemy" ||
+          node.object.type === "gate"
+        )
+      ) {
+        next.blockers.add(node.object.id);
+      }
 
-        return next;
-      })
-  );
+      return next;
+    });
 }

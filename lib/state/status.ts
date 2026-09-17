@@ -101,21 +101,15 @@ export class Status {
   }
 
   equals(other: Status): boolean {
-    return statusKeys.every(
-      (key) => this[key] === other[key],
-    );
+    return statusKeys.every((key) => this[key] === other[key]);
   }
 
   notInferiorAllTo(other: Status): boolean {
-    return statusKeys.every(
-      (key) => this[key] >= other[key],
-    );
+    return statusKeys.every((key) => this[key] >= other[key]);
   }
 
   superiorAnyTo(other: Status): boolean {
-    return statusKeys.some(
-      (key) => this[key] > other[key],
-    );
+    return statusKeys.some((key) => this[key] > other[key]);
   }
 
   toObject(): StatusObject {

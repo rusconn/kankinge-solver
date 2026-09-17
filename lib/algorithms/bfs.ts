@@ -24,7 +24,9 @@ export function bfs(graph: Graph, start: ObjectInstance, goal: ObjectInstance): 
       depth = node.depth;
     }
 
-    if (frontiers.dominates(node.state)) continue;
+    if (frontiers.dominates(node.state)) {
+      continue;
+    }
 
     ++searched;
 

@@ -5,6 +5,7 @@ export function create(args: typeof Deno.args): Config | Error {
   if (mapPath == null) {
     return new Error("USAGE: deno task exec <map_file> <bfs|iddfs>");
   }
+
   const algorithm = args[1];
   if (!isAlgorithm(algorithm)) {
     return new Error("USAGE: deno task exec <map_file> <bfs|iddfs>");

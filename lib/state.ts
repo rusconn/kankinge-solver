@@ -21,7 +21,9 @@ export function initial(objectId: ObjectId): State {
 
 export function expand(state: State, graph: Graph): State[] {
   const noCost = moveToNoCost(state, graph);
-  if (noCost) return [noCost];
+  if (noCost) {
+    return [noCost];
+  }
 
   return [
     ...moves(state, graph),

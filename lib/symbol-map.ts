@@ -13,7 +13,9 @@ export function read(mapPath: string): { start: Point; goal: Point; map: SymbolM
   let goal: Point = { x: -1, y: -1 };
   for (const [y, row] of symbolMap.entries()) {
     for (const [x, symbol] of row.entries()) {
-      if (Symbol.isGoal(symbol)) goal = { x, y };
+      if (Symbol.isGoal(symbol)) {
+        goal = { x, y };
+      }
     }
   }
 

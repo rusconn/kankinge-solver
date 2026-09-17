@@ -19,7 +19,9 @@ export function create(map: ObjectMap, start: ObjectInstance): Edges {
   while (!nodes.isEmpty()) {
     const node = nodes.dequeue()!;
 
-    if (frontiers.dominates(node)) continue;
+    if (frontiers.dominates(node)) {
+      continue;
+    }
 
     for (const next of Node.expand(node, map, start)) {
       if (frontiers.add(next)) {
