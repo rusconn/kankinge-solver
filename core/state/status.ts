@@ -15,9 +15,9 @@ export type Status = Record<(typeof statusKeys)[number], number>;
 export const Status = {
   initial(): Status {
     return {
-      hp: 150,
-      atk: 10,
-      def: 0,
+      hp: 1000,
+      atk: 5,
+      def: 5,
       gold: 0,
       silver: 0,
       blue: 0,

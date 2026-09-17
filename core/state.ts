@@ -36,7 +36,6 @@ export const State = {
       for (const dest of dests) {
         addMovedState(state, dest, stage.neighborMasks[dest.id]!, buf);
       }
-      addConvertedStates(state, buf);
     }
   },
 
@@ -101,44 +100,4 @@ function moved(status: Status, state: State, dest: ObjectInstance, neighborMask:
       BitSet.difference(neighborMask, state.erased),
     ),
   };
-}
-
-function addConvertedStates(state: State, buf: State[]): void {
-  const { status } = state;
-
-  if (status.mag >= 60) {
-    const silver = Status.clone(status);
-    silver.mag -= 60;
-    silver.silver += 1;
-    silver.level += 3;
-    buf.push(converted(state, silver));
-  }
-
-  if (status.mag >= 40) {
-    const hp = Status.clone(status);
-    hp.mag -= 40;
-    hp.hp += 500 + 150 * hp.level;
-    hp.level += 2;
-    const atk = Status.clone(status);
-    atk.mag -= 40;
-    atk.atk += 5 + atk.level;
-    atk.level += 2;
-    const def = Status.clone(status);
-    def.mag -= 40;
-    def.def += 5 + def.level;
-    def.level += 2;
-    buf.push(converted(state, hp), converted(state, atk), converted(state, def));
-  }
-
-  if (status.mag >= 20) {
-    const gold = Status.clone(status);
-    gold.mag -= 20;
-    gold.gold += 1;
-    gold.level += 1;
-    buf.push(converted(state, gold));
-  }
-}
-
-function converted(state: State, status: Status): State {
-  return { ...state, status };
 }
