@@ -1,6 +1,6 @@
 import { Object } from "./object.ts";
 import { ObjectIds } from "./object-ids.ts";
-import type { Graph } from "./graph/graph.ts";
+import type { World } from "./graph/graph.ts";
 import type { ObjectId, ObjectInstance } from "./graph/object-map.ts";
 import { Battle } from "./state/battle.ts";
 import { Status } from "./state/status.ts";
@@ -9,31 +9,33 @@ export type State = {
   objectId: ObjectId;
   status: Status;
   erased: ObjectIds;
+  boundary: ObjectIds;
 };
 
 export const State = {
-  initial(objectId: ObjectId): State {
+  initial(objectId: ObjectId, boundary: ObjectIds): State {
     return {
       objectId,
       status: Status.initial(),
       erased: ObjectIds.empty(),
+      boundary,
     };
   },
 
-  expand(state: State, graph: Graph): State[] {
-    const dests = reachables(state, graph);
+  expand(state: State, world: World): State[] {
+    const dests = destsOf(state.boundary, world);
 
     const noCost = dests.find((dest) =>
       Object.isUp(dest) || (Object.isEnemy(dest) && Battle.isNoDmg(state.status, dest))
     );
     if (noCost) {
-      const moved = tryMove(state, noCost);
+      const moved = tryMove(state, noCost, world.neighborMasks[noCost.id]!);
       return [moved!];
     }
 
     return [
       ...dests
-        .map((dest) => tryMove(state, dest))
+        .map((dest) => tryMove(state, dest, world.neighborMasks[dest.id]!))
         .filter((state) => state != null),
       ...conversions(state),
     ];
@@ -47,35 +49,24 @@ export const State = {
   },
 };
 
-function reachables(state: State, graph: Graph): ObjectInstance[] {
-  const visited = new Set<number>(); // V8のハッシュ衝突問題回避のため、bigintは避けた
-  const reached: ObjectInstance[] = [];
-  const stack: number[] = [state.objectId];
+function destsOf(boundary: ObjectIds, world: World): ObjectInstance[] {
+  const dests: ObjectInstance[] = [];
+  let bits = boundary;
 
-  while (stack.length > 0) {
-    const objectId = stack.pop()!;
-    if (visited.has(objectId)) {
-      continue;
-    }
-
-    visited.add(objectId);
-
-    for (const to of graph.get(objectId)!) {
-      if (visited.has(to.id)) {
-        continue;
-      }
-      if (ObjectIds.has(state.erased, to.idBit)) {
-        stack.push(to.id);
-      } else {
-        reached.push(to);
-      }
-    }
+  while (bits !== 0n) {
+    const lowbit = bits & -bits;
+    dests.push(world.objects[Math.log2(Number(lowbit))]!);
+    bits ^= lowbit;
   }
 
-  return reached;
+  return dests;
 }
 
-function tryMove({ status, ...rest }: State, dest: ObjectInstance): State | void {
+function tryMove(
+  { status, ...rest }: State,
+  dest: ObjectInstance,
+  neighborMask: ObjectIds,
+): State | void {
   const cloneState = (): State => ({ ...rest, status: status.clone() });
 
   switch (dest.type) {
@@ -84,6 +75,8 @@ function tryMove({ status, ...rest }: State, dest: ObjectInstance): State | void
       state.status[dest.kind] += dest.amount;
       state.objectId = dest.id;
       state.erased = ObjectIds.add(state.erased, dest.idBit);
+      state.boundary = (state.boundary & ~dest.idBit) |
+        (neighborMask & ~state.erased);
       return state;
     }
     case "gate": {
@@ -94,6 +87,8 @@ function tryMove({ status, ...rest }: State, dest: ObjectInstance): State | void
       state.status[dest.kind] -= 1;
       state.objectId = dest.id;
       state.erased = ObjectIds.add(state.erased, dest.idBit);
+      state.boundary = (state.boundary & ~dest.idBit) |
+        (neighborMask & ~state.erased);
       return state;
     }
     case "enemy": {
@@ -105,12 +100,16 @@ function tryMove({ status, ...rest }: State, dest: ObjectInstance): State | void
       state.status.mag += 1;
       state.objectId = dest.id;
       state.erased = ObjectIds.add(state.erased, dest.idBit);
+      state.boundary = (state.boundary & ~dest.idBit) |
+        (neighborMask & ~state.erased);
       return state;
     }
     case "goal": {
       const state = cloneState();
       state.objectId = dest.id;
       state.erased = ObjectIds.add(state.erased, dest.idBit);
+      state.boundary = (state.boundary & ~dest.idBit) |
+        (neighborMask & ~state.erased);
       return state;
     }
     default:
