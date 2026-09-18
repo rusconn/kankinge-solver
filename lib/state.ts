@@ -54,67 +54,50 @@ function destsOf(boundary: BitSet, world: World): ObjectInstance[] {
   return BitSet.indexes(boundary).map((id) => world.objects[id]!);
 }
 
-function tryMove(
-  { status, ...rest }: State,
-  dest: ObjectInstance,
-  neighborMask: BitSet,
-): State | void {
-  const cloneState = (): State => ({ ...rest, status: status.clone() });
-
+function tryMove(state: State, dest: ObjectInstance, neighborMask: BitSet): State | void {
   switch (dest.type) {
     case "up": {
-      const state = cloneState();
-      state.status[dest.kind] += dest.amount;
-      state.objectId = dest.id;
-      state.erased = BitSet.add(state.erased, dest.idBit);
-      state.boundary = BitSet.union(
-        BitSet.remove(state.boundary, dest.idBit),
-        BitSet.difference(neighborMask, state.erased),
-      );
-      return state;
+      const status = state.status.clone();
+      status[dest.kind] += dest.amount;
+      return moved(status, state, dest, neighborMask);
     }
     case "gate": {
-      if (dest.kind === "gold" && status.gold === 0) return;
-      if (dest.kind === "silver" && status.silver === 0) return;
-      if (dest.kind === "blue" && status.blue === 0) return;
-      const state = cloneState();
-      state.status[dest.kind] -= 1;
-      state.objectId = dest.id;
-      state.erased = BitSet.add(state.erased, dest.idBit);
-      state.boundary = BitSet.union(
-        BitSet.remove(state.boundary, dest.idBit),
-        BitSet.difference(neighborMask, state.erased),
-      );
-      return state;
+      if (dest.kind === "gold" && state.status.gold === 0) return;
+      if (dest.kind === "silver" && state.status.silver === 0) return;
+      if (dest.kind === "blue" && state.status.blue === 0) return;
+      const status = state.status.clone();
+      status[dest.kind] -= 1;
+      return moved(status, state, dest, neighborMask);
     }
     case "enemy": {
-      const dmg = Battle.damage(status, dest);
+      const dmg = Battle.damage(state.status, dest);
       if (dmg == null) return;
-      if (dmg >= status.hp) return;
-      const state = cloneState();
-      state.status.hp -= dmg;
-      state.status.mag += 1;
-      state.objectId = dest.id;
-      state.erased = BitSet.add(state.erased, dest.idBit);
-      state.boundary = BitSet.union(
-        BitSet.remove(state.boundary, dest.idBit),
-        BitSet.difference(neighborMask, state.erased),
-      );
-      return state;
+      if (dmg >= state.status.hp) return;
+      const status = state.status.clone();
+      status.hp -= dmg;
+      status.mag += 1;
+      return moved(status, state, dest, neighborMask);
     }
     case "goal": {
-      const state = cloneState();
-      state.objectId = dest.id;
-      state.erased = BitSet.add(state.erased, dest.idBit);
-      state.boundary = BitSet.union(
-        BitSet.remove(state.boundary, dest.idBit),
-        BitSet.difference(neighborMask, state.erased),
-      );
-      return state;
+      const status = state.status.clone();
+      return moved(status, state, dest, neighborMask);
     }
     default:
       throw new Error(`Unexpected object type: ${dest.type}`);
   }
+}
+
+function moved(status: Status, state: State, dest: ObjectInstance, neighborMask: BitSet): State {
+  return {
+    objectId: dest.id,
+    status,
+    erased: BitSet.add(state.erased, dest.idBit),
+    boundary: BitSet.union(
+      BitSet.remove(state.boundary, dest.idBit),
+      BitSet.difference(neighborMask, state.erased),
+    ),
+    alive: state.alive,
+  };
 }
 
 function conversions({ status, ...rest }: State): State[] {
