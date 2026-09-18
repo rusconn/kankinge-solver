@@ -100,42 +100,45 @@ function moved(status: Status, state: State, dest: ObjectInstance, neighborMask:
   };
 }
 
-function conversions({ status, ...rest }: State): State[] {
-  const cloneState = (): State => ({ ...rest, status: status.clone() });
-
+function conversions(state: State): State[] {
   const states: State[] = [];
+  const { status } = state;
 
   if (status.mag >= 60) {
-    const silver = cloneState();
-    silver.status.mag -= 60;
-    silver.status.silver += 1;
-    silver.status.level += 3;
-    states.push(silver);
+    const silver = status.clone();
+    silver.mag -= 60;
+    silver.silver += 1;
+    silver.level += 3;
+    states.push(converted(state, silver));
   }
 
   if (status.mag >= 40) {
-    const hp = cloneState();
-    hp.status.mag -= 40;
-    hp.status.hp += 500 + 150 * hp.status.level;
-    hp.status.level += 2;
-    const atk = cloneState();
-    atk.status.mag -= 40;
-    atk.status.atk += 5 + atk.status.level;
-    atk.status.level += 2;
-    const def = cloneState();
-    def.status.mag -= 40;
-    def.status.def += 5 + def.status.level;
-    def.status.level += 2;
-    states.push(hp, atk, def);
+    const hp = status.clone();
+    hp.mag -= 40;
+    hp.hp += 500 + 150 * hp.level;
+    hp.level += 2;
+    const atk = status.clone();
+    atk.mag -= 40;
+    atk.atk += 5 + atk.level;
+    atk.level += 2;
+    const def = status.clone();
+    def.mag -= 40;
+    def.def += 5 + def.level;
+    def.level += 2;
+    states.push(converted(state, hp), converted(state, atk), converted(state, def));
   }
 
   if (status.mag >= 20) {
-    const gold = cloneState();
-    gold.status.mag -= 20;
-    gold.status.gold += 1;
-    gold.status.level += 1;
-    states.push(gold);
+    const gold = status.clone();
+    gold.mag -= 20;
+    gold.gold += 1;
+    gold.level += 1;
+    states.push(converted(state, gold));
   }
 
   return states;
+}
+
+function converted(state: State, status: Status): State {
+  return { ...state, status };
 }
