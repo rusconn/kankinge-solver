@@ -100,16 +100,23 @@ export class Status {
     this.#status.crystal = value;
   }
 
-  equals(other: Status): boolean {
-    return statusKeys.every((key) => this[key] === other[key]);
-  }
+  compare(other: Status): "=" | ">" | "<" | "<>" {
+    let sGt = false;
+    let tGt = false;
 
-  notInferiorAllTo(other: Status): boolean {
-    return statusKeys.every((key) => this[key] >= other[key]);
-  }
+    for (const key of statusKeys) {
+      if (this[key] === other[key]) {
+        continue;
+      }
+      if (this[key] > other[key]) {
+        sGt = true;
+      } else {
+        tGt = true;
+      }
+      if (sGt && tGt) return "<>";
+    }
 
-  superiorAnyTo(other: Status): boolean {
-    return statusKeys.some((key) => this[key] > other[key]);
+    return sGt ? ">" : tGt ? "<" : "=";
   }
 
   toObject(): StatusObject {
