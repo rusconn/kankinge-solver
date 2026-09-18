@@ -26,6 +26,7 @@ export const State = {
 
   expand(state: State, world: World): State[] {
     const dests = destsOf(state.boundary, world);
+    const buf: State[] = [];
 
     const noCost = dests.find((dest) =>
       Object.isUp(dest) ||
@@ -33,16 +34,15 @@ export const State = {
       Object.isGoal(dest)
     );
     if (noCost) {
-      const moved = tryMove(state, noCost, world.neighborMasks[noCost.id]!);
-      return [moved!];
+      addMovedState(state, noCost, world.neighborMasks[noCost.id]!, buf);
+    } else {
+      for (const dest of dests) {
+        addMovedState(state, dest, world.neighborMasks[dest.id]!, buf);
+      }
+      addConvertedStates(state, buf);
     }
 
-    return [
-      ...dests
-        .map((dest) => tryMove(state, dest, world.neighborMasks[dest.id]!))
-        .filter((state) => state != null),
-      ...conversions(state),
-    ];
+    return buf;
   },
 
   compareStatus(s: State, t: State): "=" | ">" | "<" | "<>" {
@@ -54,12 +54,18 @@ function destsOf(boundary: BitSet, world: World): ObjectInstance[] {
   return BitSet.indexes(boundary).map((id) => world.objects[id]!);
 }
 
-function tryMove(state: State, dest: ObjectInstance, neighborMask: BitSet): State | void {
+function addMovedState(
+  state: State,
+  dest: ObjectInstance,
+  neighborMask: BitSet,
+  buf: State[],
+): void {
   switch (dest.type) {
     case "up": {
       const status = state.status.clone();
       status[dest.kind] += dest.amount;
-      return moved(status, state, dest, neighborMask);
+      buf.push(moved(status, state, dest, neighborMask));
+      return;
     }
     case "gate": {
       if (dest.kind === "gold" && state.status.gold === 0) return;
@@ -67,7 +73,8 @@ function tryMove(state: State, dest: ObjectInstance, neighborMask: BitSet): Stat
       if (dest.kind === "blue" && state.status.blue === 0) return;
       const status = state.status.clone();
       status[dest.kind] -= 1;
-      return moved(status, state, dest, neighborMask);
+      buf.push(moved(status, state, dest, neighborMask));
+      return;
     }
     case "enemy": {
       const dmg = Battle.damage(state.status, dest);
@@ -76,11 +83,13 @@ function tryMove(state: State, dest: ObjectInstance, neighborMask: BitSet): Stat
       const status = state.status.clone();
       status.hp -= dmg;
       status.mag += 1;
-      return moved(status, state, dest, neighborMask);
+      buf.push(moved(status, state, dest, neighborMask));
+      return;
     }
     case "goal": {
       const status = state.status.clone();
-      return moved(status, state, dest, neighborMask);
+      buf.push(moved(status, state, dest, neighborMask));
+      return;
     }
     default:
       throw new Error(`Unexpected object type: ${dest.type}`);
@@ -100,8 +109,7 @@ function moved(status: Status, state: State, dest: ObjectInstance, neighborMask:
   };
 }
 
-function conversions(state: State): State[] {
-  const states: State[] = [];
+function addConvertedStates(state: State, buf: State[]): void {
   const { status } = state;
 
   if (status.mag >= 60) {
@@ -109,7 +117,7 @@ function conversions(state: State): State[] {
     silver.mag -= 60;
     silver.silver += 1;
     silver.level += 3;
-    states.push(converted(state, silver));
+    buf.push(converted(state, silver));
   }
 
   if (status.mag >= 40) {
@@ -125,7 +133,7 @@ function conversions(state: State): State[] {
     def.mag -= 40;
     def.def += 5 + def.level;
     def.level += 2;
-    states.push(converted(state, hp), converted(state, atk), converted(state, def));
+    buf.push(converted(state, hp), converted(state, atk), converted(state, def));
   }
 
   if (status.mag >= 20) {
@@ -133,10 +141,8 @@ function conversions(state: State): State[] {
     gold.mag -= 20;
     gold.gold += 1;
     gold.level += 1;
-    states.push(converted(state, gold));
+    buf.push(converted(state, gold));
   }
-
-  return states;
 }
 
 function converted(state: State, status: Status): State {
