@@ -1,5 +1,5 @@
+import { BitSet } from "./data/bitset.ts";
 import { Object } from "./object.ts";
-import { ObjectIds } from "./object-ids.ts";
 import type { World } from "./graph/graph.ts";
 import type { ObjectId, ObjectInstance } from "./graph/object-map.ts";
 import { Battle } from "./state/battle.ts";
@@ -8,16 +8,16 @@ import { Status } from "./state/status.ts";
 export type State = {
   objectId: ObjectId;
   status: Status;
-  erased: ObjectIds;
-  boundary: ObjectIds;
+  erased: BitSet;
+  boundary: BitSet;
 };
 
 export const State = {
-  initial(objectId: ObjectId, boundary: ObjectIds): State {
+  initial(objectId: ObjectId, boundary: BitSet): State {
     return {
       objectId,
       status: Status.initial(),
-      erased: ObjectIds.empty(),
+      erased: BitSet.empty(),
       boundary,
     };
   },
@@ -49,23 +49,14 @@ export const State = {
   },
 };
 
-function destsOf(boundary: ObjectIds, world: World): ObjectInstance[] {
-  const dests: ObjectInstance[] = [];
-  let bits = boundary;
-
-  while (bits !== 0n) {
-    const lowbit = bits & -bits;
-    dests.push(world.objects[Math.log2(Number(lowbit))]!);
-    bits ^= lowbit;
-  }
-
-  return dests;
+function destsOf(boundary: BitSet, world: World): ObjectInstance[] {
+  return BitSet.indexes(boundary).map((id) => world.objects[id]!);
 }
 
 function tryMove(
   { status, ...rest }: State,
   dest: ObjectInstance,
-  neighborMask: ObjectIds,
+  neighborMask: BitSet,
 ): State | void {
   const cloneState = (): State => ({ ...rest, status: status.clone() });
 
@@ -74,9 +65,11 @@ function tryMove(
       const state = cloneState();
       state.status[dest.kind] += dest.amount;
       state.objectId = dest.id;
-      state.erased = ObjectIds.add(state.erased, dest.idBit);
-      state.boundary = (state.boundary & ~dest.idBit) |
-        (neighborMask & ~state.erased);
+      state.erased = BitSet.add(state.erased, dest.idBit);
+      state.boundary = BitSet.union(
+        BitSet.remove(state.boundary, dest.idBit),
+        BitSet.difference(neighborMask, state.erased),
+      );
       return state;
     }
     case "gate": {
@@ -86,9 +79,11 @@ function tryMove(
       const state = cloneState();
       state.status[dest.kind] -= 1;
       state.objectId = dest.id;
-      state.erased = ObjectIds.add(state.erased, dest.idBit);
-      state.boundary = (state.boundary & ~dest.idBit) |
-        (neighborMask & ~state.erased);
+      state.erased = BitSet.add(state.erased, dest.idBit);
+      state.boundary = BitSet.union(
+        BitSet.remove(state.boundary, dest.idBit),
+        BitSet.difference(neighborMask, state.erased),
+      );
       return state;
     }
     case "enemy": {
@@ -99,17 +94,21 @@ function tryMove(
       state.status.hp -= dmg;
       state.status.mag += 1;
       state.objectId = dest.id;
-      state.erased = ObjectIds.add(state.erased, dest.idBit);
-      state.boundary = (state.boundary & ~dest.idBit) |
-        (neighborMask & ~state.erased);
+      state.erased = BitSet.add(state.erased, dest.idBit);
+      state.boundary = BitSet.union(
+        BitSet.remove(state.boundary, dest.idBit),
+        BitSet.difference(neighborMask, state.erased),
+      );
       return state;
     }
     case "goal": {
       const state = cloneState();
       state.objectId = dest.id;
-      state.erased = ObjectIds.add(state.erased, dest.idBit);
-      state.boundary = (state.boundary & ~dest.idBit) |
-        (neighborMask & ~state.erased);
+      state.erased = BitSet.add(state.erased, dest.idBit);
+      state.boundary = BitSet.union(
+        BitSet.remove(state.boundary, dest.idBit),
+        BitSet.difference(neighborMask, state.erased),
+      );
       return state;
     }
     default:

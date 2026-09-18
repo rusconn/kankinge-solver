@@ -1,6 +1,6 @@
+import type { BitSet } from "../../data/bitset.ts";
 import type { World } from "../../graph/graph.ts";
 import type { ObjectId } from "../../graph/object-map.ts";
-import type { ObjectIds } from "../../object-ids.ts";
 import { State } from "../../state.ts";
 
 export type Node = {
@@ -10,7 +10,7 @@ export type Node = {
 };
 
 export const Node = {
-  root(objectId: ObjectId, boundary: ObjectIds): Node {
+  root(objectId: ObjectId, boundary: BitSet): Node {
     return { depth: 0, state: State.initial(objectId, boundary), parent: undefined };
   },
 

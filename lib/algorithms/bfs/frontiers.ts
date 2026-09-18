@@ -1,3 +1,4 @@
+import { BitSet } from "../../data/bitset.ts";
 import { State } from "../../state.ts";
 
 type Key = string & { __tag: "Key" };
@@ -47,6 +48,6 @@ export class Frontiers {
     // bigintキーだと非常に遅かった
     // V8のBigIntハッシュ関数はほぼ下位ビットしか利用しない。下位ビットがほぼ同じ入力では深刻な衝突を引き起こす。
     // ハッシュ関数が改善されたら不要になる想定
-    return erased.toString(36) as Key;
+    return BitSet.toBigInt(erased).toString(36) as Key;
   }
 }

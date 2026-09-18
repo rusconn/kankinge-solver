@@ -1,5 +1,5 @@
+import { BitSet } from "../data/bitset.ts";
 import { Object } from "../object.ts";
-import type { ObjectIds } from "../object-ids.ts";
 import { Point } from "../point.ts";
 import type { ObjectDict, ObjectInstance, ObjectMap } from "./object-map.ts";
 import { ObjectMap as ObjectMapFactory } from "./object-map.ts";
@@ -10,7 +10,7 @@ export type Graph = ReadonlyMap<number, ReadonlySet<ObjectInstance>>;
 export type World = {
   graph: Graph;
   objects: ObjectInstance[];
-  neighborMasks: ObjectIds[];
+  neighborMasks: BitSet[];
 };
 
 export const Graph = {
@@ -24,7 +24,7 @@ export const Graph = {
 
     const graph = new Map<number, ReadonlySet<ObjectInstance>>();
     const objects: ObjectInstance[] = [];
-    const neighborMasks: ObjectIds[] = [];
+    const neighborMasks: BitSet[] = [];
 
     for (const row of objectMap.map) {
       for (const object of row) {
@@ -35,9 +35,9 @@ export const Graph = {
         objects[object.id] = object;
 
         const reached = reachables(objectMap.map, object);
-        let neighborMask = 0n;
+        let neighborMask = BitSet.empty();
         for (const to of reached) {
-          neighborMask |= to.idBit;
+          neighborMask = BitSet.add(neighborMask, to.idBit);
         }
         neighborMasks[object.id] = neighborMask;
 
