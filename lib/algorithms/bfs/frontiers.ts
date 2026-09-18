@@ -38,9 +38,10 @@ export class Frontiers {
   }
 
   #key({ erased }: Pick<State, "erased">): Key {
-    // bigintキーだと非常に遅かった
-    // V8のBigIntハッシュ関数はほぼ下位ビットしか利用しない。下位ビットがほぼ同じ入力では深刻な衝突を引き起こす。
-    // ハッシュ関数が改善されたら不要になる想定
-    return BitSet.toBigInt(erased).toString(36) as Key;
+    // bigintキーだと非常に遅かった:
+    //   V8のBigIntハッシュ関数はほぼ下位ビットしか利用しない。下位ビットが同じ入力では衝突を引き起こす
+    // radixは2の累乗が速いようだ
+    // 文字列化ワークアラウンドはハッシュ関数が改善されたら不要になる想定
+    return BitSet.toBigInt(erased).toString(32) as Key;
   }
 }
