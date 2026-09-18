@@ -22,15 +22,15 @@ export function bfs(world: World, start: ObjectInstance, goal: ObjectInstance): 
       depth = node.depth;
     }
 
-    if (frontiers.dominates(node.state)) {
-      continue;
-    }
-
     ++searched;
 
     if (node.state.objectId === goal.id) {
       console.error({ depth, searched, timeMs: Date.now() - begin });
       return node;
+    }
+
+    if (frontiers.dominates(node.state)) {
+      continue;
     }
 
     for (const next of Node.expand(node, world)) {
