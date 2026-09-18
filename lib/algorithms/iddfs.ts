@@ -1,5 +1,6 @@
 import type { World } from "../graph/graph.ts";
 import type { ObjectInstance } from "../graph/object-map.ts";
+import { State } from "../state.ts";
 import { Node } from "./shared/node.ts";
 
 export function iddfs(world: World, start: ObjectInstance, goal: ObjectInstance): Node | void {
@@ -36,7 +37,9 @@ function dls(
       return { searched, node };
     }
 
-    nodes.push(...Node.expand(node, world));
+    for (const state of State.expand(node.state, world)) {
+      nodes.push(Node.child(node, state));
+    }
   }
 
   return { searched };

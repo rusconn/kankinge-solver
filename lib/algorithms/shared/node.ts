@@ -1,5 +1,4 @@
 import type { BitSet } from "../../data/bitset.ts";
-import type { World } from "../../graph/graph.ts";
 import type { ObjectId } from "../../graph/object-map.ts";
 import { State } from "../../state.ts";
 
@@ -14,11 +13,7 @@ export const Node = {
     return { depth: 0, state: State.initial(objectId, boundary), parent: undefined };
   },
 
-  expand(node: Node, world: World): Node[] {
-    return State.expand(node.state, world).map((state) => ({
-      depth: node.depth + 1,
-      state,
-      parent: node,
-    }));
+  child(parent: Node, state: State): Node {
+    return { depth: parent.depth + 1, state, parent };
   },
 };
