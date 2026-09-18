@@ -26,7 +26,9 @@ export const State = {
     const dests = destsOf(state.boundary, world);
 
     const noCost = dests.find((dest) =>
-      Object.isUp(dest) || (Object.isEnemy(dest) && Battle.isNoDmg(state.status, dest))
+      Object.isUp(dest) ||
+      (Object.isEnemy(dest) && Battle.isNoDmg(state.status, dest)) ||
+      Object.isGoal(dest)
     );
     if (noCost) {
       const moved = tryMove(state, noCost, world.neighborMasks[noCost.id]!);
