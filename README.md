@@ -5,17 +5,12 @@
 ## 実行方法
 
 ```sh
-deno task exec <map_file>
+deno task exec <map_file> <bfs|iddfs>
 ```
 
 ## 開発環境
 
-```sh
-> deno --version
-deno 2.6.3 (stable, release, aarch64-apple-darwin)
-v8 14.2.231.17-rusty
-typescript 5.9.2
-```
+[Deno](https://deno.com/)
 
 ## メモ
 
