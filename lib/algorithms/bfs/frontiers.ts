@@ -7,15 +7,16 @@ export class Frontiers {
   #map = new Map<Key, State[]>();
 
   dominates(state: State): boolean {
-    const frontiers = this.#get(state);
+    const frontiers = this.#map.get(this.#key(state));
     return frontiers != null && !frontiers.includes(state);
   }
 
   add(state: State): boolean {
-    const frontiers = this.#get(state);
+    const key = this.#key(state);
 
+    const frontiers = this.#map.get(key);
     if (!frontiers) {
-      this.#set(state);
+      this.#map.set(key, [state]);
       return true;
     }
 
@@ -34,14 +35,6 @@ export class Frontiers {
 
     frontiers.push(state);
     return true;
-  }
-
-  #get(state: State): State[] | undefined {
-    return this.#map.get(this.#key(state));
-  }
-
-  #set(state: State): void {
-    this.#map.set(this.#key(state), [state]);
   }
 
   #key({ erased }: Pick<State, "erased">): Key {
