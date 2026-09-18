@@ -1,4 +1,3 @@
-import { Queue } from "../data/queue.ts";
 import type { World } from "../graph/graph.ts";
 import type { ObjectInstance } from "../graph/object-map.ts";
 import { State } from "../state.ts";
@@ -7,38 +6,40 @@ import { Node } from "./shared/node.ts";
 
 export function bfs(world: World, start: ObjectInstance, goal: ObjectInstance): Node | void {
   const frontiers = new Frontiers();
-  const nodes = Queue.of(Node.root(start.id, world.neighborMasks[start.id]!));
+  let current = [Node.root(start.id, world.neighborMasks[start.id]!)];
+  let next: Node[] = [];
 
-  let searched = 0;
-  let begin = Date.now();
-  let depth = 0;
+  for (let depth = 0;; depth++) {
+    let searched = 0;
+    const begin = Date.now();
 
-  while (!nodes.isEmpty()) {
-    const node = nodes.dequeue()!;
+    for (const node of current) {
+      if (!node.state.alive) {
+        continue;
+      }
 
-    if (!node.state.alive) {
-      continue;
-    }
+      ++searched;
 
-    if (node.depth !== depth) {
-      console.error({ depth, searched, timeMs: Date.now() - begin });
-      searched = 0;
-      begin = Date.now();
-      depth = node.depth;
-    }
+      if (node.state.objectId === goal.id) {
+        console.error({ depth, searched, timeMs: Date.now() - begin });
+        return node;
+      }
 
-    ++searched;
-
-    if (node.state.objectId === goal.id) {
-      console.error({ depth, searched, timeMs: Date.now() - begin });
-      return node;
-    }
-
-    for (const state of State.expand(node.state, world)) {
-      const next = Node.child(node, state);
-      if (frontiers.add(next.state)) {
-        nodes.enqueue(next);
+      for (const state of State.expand(node.state, world)) {
+        const child = Node.child(node, state);
+        if (frontiers.add(child.state)) {
+          next.push(child);
+        }
       }
     }
+
+    console.error({ depth, searched, timeMs: Date.now() - begin });
+
+    if (next.length === 0) {
+      return;
+    }
+
+    current = next;
+    next = [];
   }
 }
