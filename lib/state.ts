@@ -10,6 +10,7 @@ export type State = {
   status: Status;
   erased: BitSet;
   boundary: BitSet;
+  alive: boolean;
 };
 
 export const State = {
@@ -19,6 +20,7 @@ export const State = {
       status: Status.initial(),
       erased: BitSet.empty(),
       boundary,
+      alive: true,
     };
   },
 

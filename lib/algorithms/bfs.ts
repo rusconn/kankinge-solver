@@ -15,6 +15,10 @@ export function bfs(world: World, start: ObjectInstance, goal: ObjectInstance): 
   while (!nodes.isEmpty()) {
     const node = nodes.dequeue()!;
 
+    if (!node.state.alive) {
+      continue;
+    }
+
     if (node.depth !== depth) {
       console.error({ depth, searched, timeMs: Date.now() - begin });
       searched = 0;
@@ -27,10 +31,6 @@ export function bfs(world: World, start: ObjectInstance, goal: ObjectInstance): 
     if (node.state.objectId === goal.id) {
       console.error({ depth, searched, timeMs: Date.now() - begin });
       return node;
-    }
-
-    if (frontiers.dominates(node.state)) {
-      continue;
     }
 
     for (const next of Node.expand(node, world)) {

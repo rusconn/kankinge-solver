@@ -6,11 +6,6 @@ type Key = string & { __tag: "Key" };
 export class Frontiers {
   #map = new Map<Key, State[]>();
 
-  dominates(state: State): boolean {
-    const frontiers = this.#map.get(this.#key(state));
-    return frontiers != null && !frontiers.includes(state);
-  }
-
   add(state: State): boolean {
     const key = this.#key(state);
 
@@ -26,6 +21,7 @@ export class Frontiers {
         case "<":
           return false;
         case ">":
+          frontiers[i]!.alive = false;
           frontiers.splice(i--, 1);
           continue;
         case "<>":
