@@ -50,23 +50,22 @@ export const State = {
 function reachables(state: State, graph: Graph): ObjectInstance[] {
   const visited = new Set<number>(); // V8のハッシュ衝突問題回避のため、bigintは避けた
   const reached: ObjectInstance[] = [];
-  const stack: number[] = [ObjectIds.index(state.objectId)];
+  const stack: number[] = [state.objectId];
 
   while (stack.length > 0) {
-    const index = stack.pop()!;
-    if (visited.has(index)) {
+    const objectId = stack.pop()!;
+    if (visited.has(objectId)) {
       continue;
     }
 
-    visited.add(index);
+    visited.add(objectId);
 
-    for (const to of graph.get(index)!) {
-      const toIndex = ObjectIds.index(to.id);
-      if (visited.has(toIndex)) {
+    for (const to of graph.get(objectId)!) {
+      if (visited.has(to.id)) {
         continue;
       }
-      if (ObjectIds.has(state.erased, to.id)) {
-        stack.push(toIndex);
+      if (ObjectIds.has(state.erased, to.idBit)) {
+        stack.push(to.id);
       } else {
         reached.push(to);
       }
@@ -84,7 +83,7 @@ function tryMove({ status, ...rest }: State, dest: ObjectInstance): State | void
       const state = cloneState();
       state.status[dest.kind] += dest.amount;
       state.objectId = dest.id;
-      state.erased = ObjectIds.add(state.erased, dest.id);
+      state.erased = ObjectIds.add(state.erased, dest.idBit);
       return state;
     }
     case "gate": {
@@ -94,7 +93,7 @@ function tryMove({ status, ...rest }: State, dest: ObjectInstance): State | void
       const state = cloneState();
       state.status[dest.kind] -= 1;
       state.objectId = dest.id;
-      state.erased = ObjectIds.add(state.erased, dest.id);
+      state.erased = ObjectIds.add(state.erased, dest.idBit);
       return state;
     }
     case "enemy": {
@@ -105,13 +104,13 @@ function tryMove({ status, ...rest }: State, dest: ObjectInstance): State | void
       state.status.hp -= dmg;
       state.status.mag += 1;
       state.objectId = dest.id;
-      state.erased = ObjectIds.add(state.erased, dest.id);
+      state.erased = ObjectIds.add(state.erased, dest.idBit);
       return state;
     }
     case "goal": {
       const state = cloneState();
       state.objectId = dest.id;
-      state.erased = ObjectIds.add(state.erased, dest.id);
+      state.erased = ObjectIds.add(state.erased, dest.idBit);
       return state;
     }
     default:

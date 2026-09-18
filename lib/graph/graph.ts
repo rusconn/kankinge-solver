@@ -1,5 +1,4 @@
 import { Object } from "../object.ts";
-import { ObjectIds } from "../object-ids.ts";
 import { Point } from "../point.ts";
 import type { ObjectDict, ObjectInstance, ObjectMap } from "./object-map.ts";
 import { ObjectMap as ObjectMapFactory } from "./object-map.ts";
@@ -22,7 +21,7 @@ export const Graph = {
     for (const row of objectMap.map) {
       for (const object of row) {
         if (isOrigin(object)) {
-          graph.set(ObjectIds.index(object.id), reachables(objectMap.map, object));
+          graph.set(object.id, reachables(objectMap.map, object));
         }
       }
     }

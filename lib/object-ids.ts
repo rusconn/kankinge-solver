@@ -1,5 +1,3 @@
-import type { ObjectId } from "./graph/object-map.ts";
-
 export type ObjectIds = bigint;
 
 export const ObjectIds = {
@@ -7,17 +5,12 @@ export const ObjectIds = {
     return 0n;
   },
 
-  add(ids: ObjectIds, id: ObjectId): ObjectIds {
-    return ids | id;
+  add(ids: ObjectIds, bit: bigint): ObjectIds {
+    return ids | bit;
   },
 
-  has(ids: ObjectIds, id: ObjectId): boolean {
-    return (ids & id) !== 0n;
-  },
-
-  // ObjectIdは2^kの形なので、密な番号0..n-1に一意に変換できる
-  index(id: ObjectId): number {
-    return Math.log2(Number(id));
+  has(ids: ObjectIds, bit: bigint): boolean {
+    return (ids & bit) !== 0n;
   },
 
   equals(a: ObjectIds, b: ObjectIds): boolean {
