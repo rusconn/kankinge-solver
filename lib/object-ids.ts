@@ -15,6 +15,11 @@ export const ObjectIds = {
     return (ids & id) !== 0n;
   },
 
+  // ObjectIdは2^kの形なので、密な番号0..n-1に一意に変換できる
+  index(id: ObjectId): number {
+    return Math.log2(Number(id));
+  },
+
   equals(a: ObjectIds, b: ObjectIds): boolean {
     return a === b;
   },

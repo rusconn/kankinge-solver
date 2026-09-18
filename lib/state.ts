@@ -48,24 +48,25 @@ export const State = {
 };
 
 function reachables(state: State, graph: Graph): ObjectInstance[] {
-  const visited = new Set<ObjectId>();
+  const visited = new Set<number>(); // V8のハッシュ衝突問題回避のため、bigintは避けた
   const reached: ObjectInstance[] = [];
-  const stack: ObjectId[] = [state.objectId];
+  const stack: number[] = [ObjectIds.index(state.objectId)];
 
   while (stack.length > 0) {
-    const id = stack.pop()!;
-    if (visited.has(id)) {
+    const index = stack.pop()!;
+    if (visited.has(index)) {
       continue;
     }
 
-    visited.add(id);
+    visited.add(index);
 
-    for (const to of graph.get(id)!) {
-      if (visited.has(to.id)) {
+    for (const to of graph.get(index)!) {
+      const toIndex = ObjectIds.index(to.id);
+      if (visited.has(toIndex)) {
         continue;
       }
       if (ObjectIds.has(state.erased, to.id)) {
-        stack.push(to.id);
+        stack.push(toIndex);
       } else {
         reached.push(to);
       }

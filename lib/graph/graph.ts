@@ -1,10 +1,11 @@
 import { Object } from "../object.ts";
+import { ObjectIds } from "../object-ids.ts";
 import { Point } from "../point.ts";
-import type { ObjectDict, ObjectId, ObjectInstance, ObjectMap } from "./object-map.ts";
+import type { ObjectDict, ObjectInstance, ObjectMap } from "./object-map.ts";
 import { ObjectMap as ObjectMapFactory } from "./object-map.ts";
 import { SymbolMap } from "./symbol-map.ts";
 
-export type Graph = ReadonlyMap<ObjectId, ReadonlySet<ObjectInstance>>;
+export type Graph = ReadonlyMap<number, ReadonlySet<ObjectInstance>>;
 
 export const Graph = {
   create(mapPath: string): {
@@ -16,12 +17,12 @@ export const Graph = {
     const { symbolMap } = SymbolMap.read(mapPath);
     const objectMap = ObjectMapFactory.from({ symbolMap });
 
-    const graph = new Map<ObjectId, ReadonlySet<ObjectInstance>>();
+    const graph = new Map<number, ReadonlySet<ObjectInstance>>();
 
     for (const row of objectMap.map) {
       for (const object of row) {
         if (isOrigin(object)) {
-          graph.set(object.id, reachables(objectMap.map, object));
+          graph.set(ObjectIds.index(object.id), reachables(objectMap.map, object));
         }
       }
     }
