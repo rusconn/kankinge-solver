@@ -15,7 +15,7 @@ export function run({ mapPath, algorithm }: Config): string | void {
   return JSON.stringify(
     node
       ? {
-        status: node.state.status.toObject(),
+        status: node.state.status,
         path: pathOf(node).map((objectId) => {
           const object = dict.get(objectId)!;
           return { point: object.point, name: object.name };

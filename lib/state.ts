@@ -46,7 +46,7 @@ export const State = {
   },
 
   compareStatus(s: State, t: State): "=" | ">" | "<" | "<>" {
-    return s.status.compare(t.status);
+    return Status.compare(s.status, t.status);
   },
 };
 
@@ -62,7 +62,7 @@ function addMovedState(
 ): void {
   switch (dest.type) {
     case "up": {
-      const status = state.status.clone();
+      const status = Status.clone(state.status);
       status[dest.kind] += dest.amount;
       buf.push(moved(status, state, dest, neighborMask));
       return;
@@ -71,7 +71,7 @@ function addMovedState(
       if (dest.kind === "gold" && state.status.gold === 0) return;
       if (dest.kind === "silver" && state.status.silver === 0) return;
       if (dest.kind === "blue" && state.status.blue === 0) return;
-      const status = state.status.clone();
+      const status = Status.clone(state.status);
       status[dest.kind] -= 1;
       buf.push(moved(status, state, dest, neighborMask));
       return;
@@ -80,14 +80,14 @@ function addMovedState(
       const dmg = Battle.damage(state.status, dest);
       if (dmg == null) return;
       if (dmg >= state.status.hp) return;
-      const status = state.status.clone();
+      const status = Status.clone(state.status);
       status.hp -= dmg;
       status.mag += 1;
       buf.push(moved(status, state, dest, neighborMask));
       return;
     }
     case "goal": {
-      const status = state.status.clone();
+      const status = Status.clone(state.status);
       buf.push(moved(status, state, dest, neighborMask));
       return;
     }
@@ -113,7 +113,7 @@ function addConvertedStates(state: State, buf: State[]): void {
   const { status } = state;
 
   if (status.mag >= 60) {
-    const silver = status.clone();
+    const silver = Status.clone(status);
     silver.mag -= 60;
     silver.silver += 1;
     silver.level += 3;
@@ -121,15 +121,15 @@ function addConvertedStates(state: State, buf: State[]): void {
   }
 
   if (status.mag >= 40) {
-    const hp = status.clone();
+    const hp = Status.clone(status);
     hp.mag -= 40;
     hp.hp += 500 + 150 * hp.level;
     hp.level += 2;
-    const atk = status.clone();
+    const atk = Status.clone(status);
     atk.mag -= 40;
     atk.atk += 5 + atk.level;
     atk.level += 2;
-    const def = status.clone();
+    const def = Status.clone(status);
     def.mag -= 40;
     def.def += 5 + def.level;
     def.level += 2;
@@ -137,7 +137,7 @@ function addConvertedStates(state: State, buf: State[]): void {
   }
 
   if (status.mag >= 20) {
-    const gold = status.clone();
+    const gold = Status.clone(status);
     gold.mag -= 20;
     gold.gold += 1;
     gold.level += 1;
