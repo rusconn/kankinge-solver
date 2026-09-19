@@ -1,6 +1,7 @@
 {
   "tasks": {
-    "exec": "deno --allow-read=stages --v8-flags=--max-old-space-size=4096 cli/main.ts",
+    "exec": "deno $DENO_PROF_FLAGS --allow-read=stages --v8-flags=--max-old-space-size=4096 cli/main.ts",
+    "profile": "DENO_PROF_FLAGS='--cpu-prof-md --cpu-prof-dir=./profiles' deno task exec",
   },
   "fmt": {
     "exclude": [".zed/settings.json"],
