@@ -1,7 +1,7 @@
 import { BitSet } from "./data/bitset.ts";
 import { Object } from "./object.ts";
-import type { World } from "./graph/graph.ts";
-import type { ObjectId, ObjectInstance } from "./graph/object-map.ts";
+import type { Stage } from "./stage/stage.ts";
+import type { ObjectId, ObjectInstance } from "./stage/object-map.ts";
 import { Battle } from "./state/battle.ts";
 import { Status } from "./state/status.ts";
 
@@ -10,7 +10,6 @@ export type State = {
   status: Status;
   erased: BitSet;
   boundary: BitSet;
-  alive: boolean;
 };
 
 export const State = {
@@ -20,12 +19,11 @@ export const State = {
       status: Status.initial(),
       erased: BitSet.empty(),
       boundary,
-      alive: true,
     };
   },
 
-  expand(state: State, world: World): State[] {
-    const dests = destsOf(state.boundary, world);
+  expand(state: State, stage: Stage): State[] {
+    const dests = destsOf(state.boundary, stage);
     const buf: State[] = [];
 
     const noCost = dests.find((dest) =>
@@ -34,10 +32,10 @@ export const State = {
       Object.isGoal(dest)
     );
     if (noCost) {
-      addMovedState(state, noCost, world.neighborMasks[noCost.id]!, buf);
+      addMovedState(state, noCost, stage.neighborMasks[noCost.id]!, buf);
     } else {
       for (const dest of dests) {
-        addMovedState(state, dest, world.neighborMasks[dest.id]!, buf);
+        addMovedState(state, dest, stage.neighborMasks[dest.id]!, buf);
       }
       addConvertedStates(state, buf);
     }
@@ -50,8 +48,8 @@ export const State = {
   },
 };
 
-function destsOf(boundary: BitSet, world: World): ObjectInstance[] {
-  return BitSet.indexes(boundary).map((id) => world.objects[id]!);
+function destsOf(boundary: BitSet, stage: Stage): ObjectInstance[] {
+  return BitSet.indexes(boundary).map((id) => stage.objects[id]!);
 }
 
 function addMovedState(
@@ -105,7 +103,6 @@ function moved(status: Status, state: State, dest: ObjectInstance, neighborMask:
       BitSet.remove(state.boundary, dest.idBit),
       BitSet.difference(neighborMask, state.erased),
     ),
-    alive: state.alive,
   };
 }
 

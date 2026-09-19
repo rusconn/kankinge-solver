@@ -1,12 +1,13 @@
-import type { World } from "../graph/graph.ts";
-import type { ObjectInstance } from "../graph/object-map.ts";
+import type { Solution } from "../mod.ts";
+import type { Stage } from "../stage/stage.ts";
 import { State } from "../state.ts";
 import { Frontiers } from "./bfs/frontiers.ts";
 import { Node } from "./shared/node.ts";
+import { toSolution } from "./shared/solution.ts";
 
-export function bfs(world: World, start: ObjectInstance, goal: ObjectInstance): Node | void {
+export function bfs(stage: Stage): Solution | void {
   const frontiers = new Frontiers();
-  let current = [Node.root(start.id, world.neighborMasks[start.id]!)];
+  let current = [Node.root(stage.start.id, stage.neighborMasks[stage.start.id]!)];
   let next: Node[] = [];
 
   for (let depth = 0;; depth++) {
@@ -14,20 +15,20 @@ export function bfs(world: World, start: ObjectInstance, goal: ObjectInstance): 
     const begin = Date.now();
 
     for (const node of current) {
-      if (!node.state.alive) {
+      if (frontiers.isDead(node)) {
         continue;
       }
 
       ++searched;
 
-      if (node.state.objectId === goal.id) {
+      if (node.state.objectId === stage.goal.id) {
         console.error({ depth, searched, timeMs: Date.now() - begin });
-        return node;
+        return toSolution(node, stage);
       }
 
-      for (const state of State.expand(node.state, world)) {
+      for (const state of State.expand(node.state, stage)) {
         const child = Node.child(node, state);
-        if (frontiers.add(child.state)) {
+        if (frontiers.offer(child)) {
           next.push(child);
         }
       }

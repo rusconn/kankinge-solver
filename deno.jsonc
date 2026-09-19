@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "exec": "deno --allow-read=stages --v8-flags=--max-old-space-size=4096 bin/ks.ts",
+    "exec": "deno --allow-read=stages --v8-flags=--max-old-space-size=4096 cli/main.ts",
   },
   "fmt": {
     "exclude": [".zed/settings.json"],
