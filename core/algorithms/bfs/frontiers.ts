@@ -22,7 +22,9 @@ export class Frontiers {
           return false;
         case ">":
           frontiers[i]!.alive = false;
-          frontiers.splice(i--, 1);
+          frontiers[i] = frontiers.at(-1)!;
+          frontiers.pop();
+          i--;
           continue;
         case "<>":
           continue;
