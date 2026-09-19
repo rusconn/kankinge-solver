@@ -24,7 +24,9 @@ export class Frontiers {
           return false;
         case ">":
           this.#dead.add(frontiers[i]!);
-          frontiers.splice(i--, 1);
+          frontiers[i] = frontiers.at(-1)!;
+          frontiers.pop();
+          i--;
           continue;
         case "<>":
           continue;
