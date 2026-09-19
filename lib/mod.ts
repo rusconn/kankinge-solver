@@ -8,7 +8,7 @@ import type { ObjectId } from "./graph/object-map.ts";
 export * from "./config.ts";
 
 export function run({ mapPath, algorithm }: Config): string | void {
-  const { graph, start, goal, dict, objects, neighborMasks } = Graph.create(mapPath);
+  const { graph, start, goal, objects, neighborMasks } = Graph.create(mapPath);
   const world = { graph, objects, neighborMasks };
   const node = algorithms[algorithm](world, start, goal);
 
@@ -17,7 +17,7 @@ export function run({ mapPath, algorithm }: Config): string | void {
       ? {
         status: node.state.status,
         path: pathOf(node).map((objectId) => {
-          const object = dict.get(objectId)!;
+          const object = objects[objectId]!;
           return { point: object.point, name: object.name };
         }),
       }

@@ -10,7 +10,6 @@ export type ObjectInstance = Object & {
 };
 
 export type ObjectId = number;
-export type ObjectDict = ReadonlyMap<ObjectId, ObjectInstance>;
 export type ObjectMap = ReadonlyArray<ReadonlyArray<ObjectInstance>>;
 
 export const ObjectMap = {
@@ -20,7 +19,6 @@ export const ObjectMap = {
     map: ObjectMap;
     start: ObjectInstance;
     goal: ObjectInstance;
-    dict: ObjectDict;
   } {
     let id = 0;
     let idBit = 1n;
@@ -53,20 +51,10 @@ export const ObjectMap = {
       })
     );
 
-    const dict = new Map<ObjectId, ObjectInstance>();
-    for (const row of map) {
-      for (const object of row) {
-        if (object.id >= 0) {
-          dict.set(object.id, object);
-        }
-      }
-    }
-
     return {
       map,
       start: start!,
       goal: goal!,
-      dict,
     };
   },
 };

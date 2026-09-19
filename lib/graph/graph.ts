@@ -1,7 +1,7 @@
 import { BitSet } from "../data/bitset.ts";
 import { Object } from "../object.ts";
 import { Point } from "../point.ts";
-import type { ObjectDict, ObjectInstance, ObjectMap } from "./object-map.ts";
+import type { ObjectInstance, ObjectMap } from "./object-map.ts";
 import { ObjectMap as ObjectMapFactory } from "./object-map.ts";
 import { SymbolMap } from "./symbol-map.ts";
 
@@ -17,7 +17,6 @@ export const Graph = {
   create(mapPath: string): World & {
     start: ObjectInstance;
     goal: ObjectInstance;
-    dict: ObjectDict;
   } {
     const { symbolMap } = SymbolMap.read(mapPath);
     const objectMap = ObjectMapFactory.from({ symbolMap });
@@ -53,7 +52,6 @@ export const Graph = {
       neighborMasks,
       start: objectMap.start,
       goal: objectMap.goal,
-      dict: objectMap.dict,
     };
   },
 };
