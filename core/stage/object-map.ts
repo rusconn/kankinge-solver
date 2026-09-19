@@ -13,19 +13,11 @@ export type ObjectId = number;
 export type ObjectMap = ReadonlyArray<ReadonlyArray<ObjectInstance>>;
 
 export const ObjectMap = {
-  from(input: {
-    symbolMap: SymbolMap;
-  }): {
-    map: ObjectMap;
-    start: ObjectInstance;
-    goal: ObjectInstance;
-  } {
+  create(symbolMap: SymbolMap): ObjectMap {
     let id = 0;
     let idBit = 1n;
-    let start: ObjectInstance | undefined;
-    let goal: ObjectInstance | undefined;
 
-    const map: ObjectMap = input.symbolMap.map((line, y) =>
+    const objectMap: ObjectMap = symbolMap.map((line, y) =>
       line.map((symbol, x) => {
         const instance: ObjectInstance = {
           id: -1,
@@ -40,21 +32,10 @@ export const ObjectMap = {
           idBit <<= 1n;
         }
 
-        if (Object.isStart(instance)) {
-          start = instance;
-        }
-        if (Object.isGoal(instance)) {
-          goal = instance;
-        }
-
         return instance;
       })
     );
 
-    return {
-      map,
-      start: start!,
-      goal: goal!,
-    };
+    return objectMap;
   },
 };

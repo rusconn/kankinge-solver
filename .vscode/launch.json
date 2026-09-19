@@ -8,15 +8,12 @@
       "request": "launch",
       "name": "0_tutorial.json",
       "type": "node",
-      "program": "${workspaceFolder}/bin/ks.ts",
+      "program": "${workspaceFolder}/cli/main.ts",
       "args": ["stages/0_tutorial.json", "bfs"],
       "cwd": "${workspaceFolder}",
       "env": {},
       "runtimeExecutable": "deno",
-      "runtimeArgs": [
-        "--inspect-brk",
-        "--allow-read=stages"
-      ],
+      "runtimeArgs": ["--inspect-brk", "--allow-read=stages"],
       "attachSimplePort": 9229
     }
   ]

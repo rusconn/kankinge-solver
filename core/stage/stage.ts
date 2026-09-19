@@ -1,31 +1,27 @@
 import { BitSet } from "../data/bitset.ts";
 import { Object } from "../object.ts";
 import { Point } from "../point.ts";
-import type { ObjectInstance, ObjectMap } from "./object-map.ts";
-import { ObjectMap as ObjectMapFactory } from "./object-map.ts";
+import { type ObjectInstance, ObjectMap } from "./object-map.ts";
 import { SymbolMap } from "./symbol-map.ts";
 
-export type Graph = ReadonlyMap<number, ReadonlySet<ObjectInstance>>;
-
-export type World = {
-  graph: Graph;
+export type Stage = {
   objects: ObjectInstance[];
   neighborMasks: BitSet[];
+  start: ObjectInstance;
+  goal: ObjectInstance;
 };
 
-export const Graph = {
-  create(mapPath: string): World & {
-    start: ObjectInstance;
-    goal: ObjectInstance;
-  } {
-    const { symbolMap } = SymbolMap.read(mapPath);
-    const objectMap = ObjectMapFactory.from({ symbolMap });
+export const Stage = {
+  parse(jsonText: string): Stage {
+    const symbolMap = SymbolMap.parse(jsonText);
+    const objectMap = ObjectMap.create(symbolMap);
 
-    const graph = new Map<number, ReadonlySet<ObjectInstance>>();
     const objects: ObjectInstance[] = [];
     const neighborMasks: BitSet[] = [];
+    let start: ObjectInstance | undefined;
+    let goal: ObjectInstance | undefined;
 
-    for (const row of objectMap.map) {
+    for (const row of objectMap) {
       for (const object of row) {
         if (Object.isWall(object) || Object.isRoad(object)) {
           continue;
@@ -33,25 +29,27 @@ export const Graph = {
 
         objects[object.id] = object;
 
-        const reached = reachables(objectMap.map, object);
+        const reached = reachables(objectMap, object);
         let neighborMask = BitSet.empty();
         for (const to of reached) {
           neighborMask = BitSet.add(neighborMask, to.idBit);
         }
         neighborMasks[object.id] = neighborMask;
 
-        if (!Object.isGoal(object)) {
-          graph.set(object.id, reached);
+        if (Object.isStart(object)) {
+          start = object;
+        }
+        if (Object.isGoal(object)) {
+          goal = object;
         }
       }
     }
 
     return {
-      graph,
       objects,
       neighborMasks,
-      start: objectMap.start,
-      goal: objectMap.goal,
+      start: start!,
+      goal: goal!,
     };
   },
 };
