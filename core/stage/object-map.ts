@@ -1,5 +1,5 @@
 import { Object } from "../object.ts";
-import type { Point } from "../point.ts";
+import { Point } from "../point.ts";
 import { Symbol } from "./symbols.ts";
 import type { SymbolMap } from "./symbol-map.ts";
 
@@ -13,6 +13,16 @@ export type ObjectId = number;
 export type ObjectMap = ReadonlyArray<ReadonlyArray<ObjectInstance>>;
 
 export const ObjectMap = {
+  get(map: ObjectMap, point: Point): ObjectInstance | undefined {
+    return map.at(point.y)?.at(point.x);
+  },
+
+  neighbors(map: ObjectMap, point: Point): ObjectInstance[] {
+    return Point.neighbors(point)
+      .map((point) => ObjectMap.get(map, point))
+      .filter((instance) => instance != null);
+  },
+
   create(symbolMap: SymbolMap): ObjectMap {
     let id = 0;
     let idBit = 1n;

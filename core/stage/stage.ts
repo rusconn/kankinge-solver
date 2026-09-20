@@ -1,6 +1,5 @@
 import { BitSet } from "../data/bitset.ts";
 import { Object } from "../object.ts";
-import { Point } from "../point.ts";
 import { type ObjectInstance, ObjectMap } from "./object-map.ts";
 import { SymbolMap } from "./symbol-map.ts";
 
@@ -68,7 +67,7 @@ function reachables(map: ObjectMap, start: ObjectInstance): ReadonlySet<ObjectIn
 
     visited.add(node);
 
-    for (const next of neighbors(map, node.point)) {
+    for (const next of ObjectMap.neighbors(map, node.point)) {
       if (visited.has(next)) {
         continue;
       }
@@ -81,10 +80,4 @@ function reachables(map: ObjectMap, start: ObjectInstance): ReadonlySet<ObjectIn
   }
 
   return reached;
-}
-
-function neighbors(map: ObjectMap, point: { x: number; y: number }): ObjectInstance[] {
-  return Point.neighbors(point)
-    .map((point) => map[point.y]?.[point.x])
-    .filter((object): object is ObjectInstance => object != null);
 }
