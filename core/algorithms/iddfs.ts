@@ -17,6 +17,7 @@ export function iddfs(stage: Stage): Solution | void {
 
 function dls(stage: Stage, limit: number): { searched: number; node?: Node } {
   const nodes = [Node.root(stage.start.id, stage.neighborMasks[stage.start.id]!)];
+  const statesBuf: State[] = [];
 
   let searched = 0;
 
@@ -33,7 +34,9 @@ function dls(stage: Stage, limit: number): { searched: number; node?: Node } {
       return { searched, node };
     }
 
-    for (const state of State.expand(node.state, stage)) {
+    State.addChildStates(node.state, stage, statesBuf);
+    while (statesBuf.length > 0) {
+      const state = statesBuf.pop()!;
       nodes.push(Node.child(node, state));
     }
   }

@@ -9,6 +9,7 @@ export function bfs(stage: Stage): Solution | void {
   const frontiers = new Frontiers();
   let current = [Node.root(stage.start.id, stage.neighborMasks[stage.start.id]!)];
   let next: Node[] = [];
+  const statesBuf: State[] = [];
 
   for (let depth = 0;; depth++) {
     let searched = 0;
@@ -26,7 +27,9 @@ export function bfs(stage: Stage): Solution | void {
         return toSolution(node, stage);
       }
 
-      for (const state of State.expand(node.state, stage)) {
+      State.addChildStates(node.state, stage, statesBuf);
+      while (statesBuf.length > 0) {
+        const state = statesBuf.pop()!;
         const child = Node.child(node, state);
         if (frontiers.offer(child)) {
           next.push(child);

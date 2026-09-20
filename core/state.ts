@@ -22,9 +22,8 @@ export const State = {
     };
   },
 
-  expand(state: State, stage: Stage): State[] {
+  addChildStates(state: State, stage: Stage, buf: State[]) {
     const dests = destsOf(state.boundary, stage);
-    const buf: State[] = [];
 
     const noCost = dests.find((dest) =>
       Object.isUp(dest) ||
@@ -39,8 +38,6 @@ export const State = {
       }
       addConvertedStates(state, buf);
     }
-
-    return buf;
   },
 
   compareStatus(s: State, t: State): "=" | ">" | "<" | "<>" {
